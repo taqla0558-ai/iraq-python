@@ -3,10 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>مفاجأة لجميلي ✨</title>
+    <title>إلى الأبد ✨</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap');
+
         body { 
-            background: #050505;
+            background: #000;
             display: flex; 
             flex-direction: column;
             justify-content: center; 
@@ -16,181 +18,182 @@
             font-family: 'Cairo', sans-serif;
             overflow: hidden;
             color: white;
+            cursor: crosshair;
         }
 
-        /* خلفية النجوم المتحركة */
         canvas {
             position: absolute;
             top: 0;
             left: 0;
-            z-index: 0;
-        }
-
-        #instruction {
-            color: #fff;
-            font-size: 20px;
-            margin-bottom: 40px;
-            letter-spacing: 1px;
-            text-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
-            animation: pulseText 2s infinite ease-in-out;
-            z-index: 10;
+            z-index: 1;
             pointer-events: none;
         }
 
-        @keyframes pulseText {
-            0%, 100% { opacity: 0.4; transform: scale(0.95); }
-            50% { opacity: 1; transform: scale(1.05); }
+        #instruction {
+            font-size: 22px;
+            margin-bottom: 50px;
+            text-shadow: 0 0 20px rgba(255, 50, 50, 0.8);
+            animation: floating 3s infinite ease-in-out;
+            z-index: 10;
+            font-weight: bold;
+        }
+
+        @keyframes floating {
+            0%, 100% { transform: translateY(0); opacity: 0.6; }
+            50% { transform: translateY(-10px); opacity: 1; }
         }
 
         .container {
             position: relative;
-            width: 280px; 
-            height: 280px;
-            cursor: pointer;
+            width: 300px; 
+            height: 300px;
             z-index: 10;
             display: flex;
             justify-content: center;
             align-items: center;
-            transition: transform 0.3s;
         }
 
-        .container:active { transform: scale(0.9); }
-
-        /* النص داخل القلب */
         .text {
             position: absolute;
             color: white;
             font-weight: bold;
-            font-size: 24px;
+            font-size: 26px;
             text-align: center;
             opacity: 0;
             z-index: 11;
-            text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
-            line-height: 1.5;
+            text-shadow: 0 0 15px rgba(255, 255, 255, 0.9);
+            transform: scale(0.5);
+            transition: all 1.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
         svg {
             width: 100%;
             height: 100%;
-            filter: drop-shadow(0 0 20px rgba(255, 50, 50, 0.3));
+            filter: drop-shadow(0 0 10px rgba(255, 0, 0, 0.5));
         }
 
         .heart-path {
             fill: none;
-            stroke: #ff3232;
+            stroke: #ff1e1e;
             stroke-width: 2.5;
             stroke-dasharray: 1000;
             stroke-dashoffset: 1000;
             stroke-linecap: round;
         }
 
-        /* أنميشن السحر */
         .container.active .heart-path {
-            animation: drawHeart 3s forwards ease-in-out, pulseHeart 1.4s 3s infinite ease-in-out;
+            animation: drawHeart 3.5s forwards ease-in-out, neonPulse 2s 3.5s infinite alternate;
         }
 
         .container.active .text {
-            animation: fadeIn 1.5s forwards 2.5s;
+            opacity: 1;
+            transform: scale(1);
         }
 
         @keyframes drawHeart {
-            0% { stroke-dashoffset: 1000; fill: rgba(255, 50, 50, 0); }
-            100% { stroke-dashoffset: 0; fill: rgba(255, 50, 50, 0.5); }
+            0% { stroke-dashoffset: 1000; fill: rgba(255, 30, 30, 0); }
+            100% { stroke-dashoffset: 0; fill: rgba(255, 30, 30, 0.4); }
         }
 
-        @keyframes pulseHeart {
-            0%, 100% { transform: scale(1); filter: drop-shadow(0 0 20px #ff0000); }
-            50% { transform: scale(1.08); filter: drop-shadow(0 0 40px #ff3232); }
+        @keyframes neonPulse {
+            from { filter: drop-shadow(0 0 10px #ff0000); stroke: #ff1e1e; }
+            to { filter: drop-shadow(0 0 30px #ff0055); stroke: #ff0055; transform: scale(1.05); }
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* طبقة التوهج الخلفي */
-        .glow {
+        /* القلوب المتساقطة */
+        .falling-heart {
             position: absolute;
-            width: 100%;
-            height: 100%;
-            background: radial-gradient(circle, rgba(255,50,50,0.2) 0%, transparent 70%);
-            opacity: 0;
-            transition: opacity 2s;
+            color: #ff1e1e;
+            font-size: 15px;
+            user-select: none;
+            z-index: 5;
+            animation: fall linear forwards;
         }
-        .container.active .glow { opacity: 1; }
+
+        @keyframes fall {
+            to { transform: translateY(100vh) rotate(360deg); opacity: 0; }
+        }
     </style>
 </head>
-<body>
+<body onclick="startAnimation(event)">
 
-    <canvas id="canvas"></canvas>
+    <canvas id="starsCanvas"></canvas>
     <div id="instruction">المس الشاشة ياجميلي.. ✨</div>
 
-    <div class="container" onclick="startAnimation()">
-        <div class="glow"></div>
+    <div class="container" id="mainHeart">
         <svg viewBox="0 0 100 100">
             <path class="heart-path" d="M50,88 C50,88 10,57 10,32 C10,13 32,10 50,30 C68,10 90,13 90,32 C90,57 50,88 50,88 Z"></path>
         </svg>
-        <div class="text">أنتَ عمري<br>وكل أشيائي الجميلة ❤️</div>
+        <div class="text">أنتَ عمري<br>ونبض قلبي ❤️</div>
     </div>
 
     <script>
-        // أنميشن النجوم المتفاعل
-        const canvas = document.getElementById('canvas');
+        const canvas = document.getElementById('starsCanvas');
         const ctx = canvas.getContext('2d');
         let stars = [];
 
-        function resize() {
+        function initCanvas() {
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
         }
-        window.addEventListener('resize', resize);
-        resize();
+        window.addEventListener('resize', initCanvas);
+        initCanvas();
 
         class Star {
-            constructor() {
-                this.x = Math.random() * canvas.width;
-                this.y = Math.random() * canvas.height;
+            constructor(x, y, isStatic = true) {
+                this.x = x || Math.random() * canvas.width;
+                this.y = y || Math.random() * canvas.height;
                 this.size = Math.random() * 2;
-                this.speedX = (Math.random() - 0.5) * 0.5;
-                this.speedY = (Math.random() - 0.5) * 0.5;
-            }
-            update() {
-                this.x += this.speedX;
-                this.y += this.speedY;
-                if (this.x > canvas.width) this.x = 0;
-                if (this.x < 0) this.x = canvas.width;
-                if (this.y > canvas.height) this.y = 0;
-                if (this.y < 0) this.y = canvas.height;
+                this.alpha = Math.random();
+                this.speed = isStatic ? 0.2 : 2;
             }
             draw() {
-                ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+                ctx.fillStyle = `rgba(255, 255, 255, ${this.alpha})`;
                 ctx.beginPath();
                 ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
                 ctx.fill();
             }
+            update() {
+                this.alpha += 0.01;
+                if (this.alpha > 1) this.alpha = 0;
+            }
         }
 
-        for (let i = 0; i < 150; i++) stars.push(new Star());
+        for(let i=0; i<150; i++) stars.push(new Star());
 
         function animate() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            stars.forEach(star => {
-                star.update();
-                star.draw();
-            });
+            stars.forEach(s => { s.draw(); s.update(); });
             requestAnimationFrame(animate);
         }
         animate();
 
-        function startAnimation() {
-            document.getElementById('instruction').style.opacity = '0';
-            const container = document.querySelector('.container');
-            if (!container.classList.contains('active')) {
-                container.classList.add('active');
-                setTimeout(() => {
-                    window.location.href = 'https://t.me/mnshtrk';
-                }, 7500); // زدنا الوقت قليلاً للاستمتاع بالمنظر
-            }
+        function createFallingHeart() {
+            const heart = document.createElement('div');
+            heart.innerHTML = '❤️';
+            heart.className = 'falling-heart';
+            heart.style.left = Math.random() * 100 + 'vw';
+            heart.style.animationDuration = (Math.random() * 3 + 2) + 's';
+            heart.style.opacity = Math.random();
+            document.body.appendChild(heart);
+            setTimeout(() => heart.remove(), 5000);
+        }
+
+        let activated = false;
+        function startAnimation(e) {
+            if (activated) return;
+            activated = true;
+            
+            document.getElementById('instruction').style.display = 'none';
+            document.getElementById('mainHeart').classList.add('active');
+            
+            // بدء مطر القلوب
+            setInterval(createFallingHeart, 300);
+
+            // الانتقال بعد العرض الجميل
+            setTimeout(() => {
+                window.location.href = 'https://t.me/mnshtrk';
+            }, 9000);
         }
     </script>
 </body>
