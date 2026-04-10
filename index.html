@@ -18,25 +18,20 @@
             font-family: 'Cairo', sans-serif;
             overflow: hidden;
             color: white;
-            cursor: pointer; /* تغيير المؤشر ليدل على إمكانية الضغط */
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent; /* إزالة لون التحديد عند اللمس */
         }
 
-        canvas {
-            position: absolute;
-            top: 0;
-            left: 0;
-            z-index: 1;
-            pointer-events: none;
-        }
-
+        /* نص التعليمات */
         #instruction {
             font-size: 24px;
             margin-bottom: 50px;
             text-shadow: 0 0 20px rgba(255, 50, 50, 0.8);
             animation: floating 3s infinite ease-in-out;
-            z-index: 10;
+            z-index: 100;
             font-weight: bold;
             text-align: center;
+            pointer-events: none; /* منع النص من اعتراض اللمس */
         }
 
         @keyframes floating {
@@ -44,7 +39,8 @@
             50% { transform: translateY(-15px); opacity: 1; }
         }
 
-        .container {
+        /* حاوية القلب الكبير */
+        .heart-container {
             position: relative;
             width: 300px; 
             height: 300px;
@@ -52,7 +48,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            pointer-events: none; /* منع الحاوية من اعتراض الضغط */
+            pointer-events: none;
         }
 
         .text {
@@ -83,11 +79,11 @@
             stroke-linecap: round;
         }
 
-        .container.active .heart-path {
+        .heart-container.active .heart-path {
             animation: drawHeart 3.5s forwards ease-in-out, neonPulse 2s 3.5s infinite alternate;
         }
 
-        .container.active .text {
+        .heart-container.active .text {
             opacity: 1;
             transform: scale(1);
         }
@@ -110,33 +106,40 @@
             user-select: none;
             z-index: 5;
             animation: fall linear forwards;
+            pointer-events: none;
         }
 
         @keyframes fall {
             to { transform: translateY(110vh) rotate(360deg); opacity: 0; }
         }
 
-        /* جسيمات انفجار الورد */
+        /* جسيمات انفجار الورد (تم تعديلها لتعمل بالـ CSS) */
         .flower-particle {
             position: absolute;
             pointer-events: none;
-            font-size: 25px; /* تكبير حجم الورود قليلاً */
-            z-index: 15;
-            animation: burstAnimation linear forwards;
+            font-size: 30px; /* حجم أكبر للورود */
+            z-index: 150;
+            opacity: 0;
+            transform: translate(0, 0) scale(1);
+        }
+
+        /* هذه الفئة سيتم إضافتها عبر الجافاسكريبت لتشغيل الأنميشن */
+        .flower-burst {
+            animation: burstAnimation cubic-bezier(0.1, 0.8, 0.3, 1) forwards;
         }
 
         @keyframes burstAnimation {
             0% { transform: translate(0, 0) scale(1); opacity: 1; }
+            80% { opacity: 1; }
             100% { transform: translate(var(--dx), var(--dy)) rotate(var(--rotation)) scale(var(--scale)); opacity: 0; }
         }
     </style>
 </head>
-<body onclick="startEverything(event)">
+<body id="body">
 
-    <canvas id="starsCanvas"></canvas>
     <div id="instruction">المس الشاشة ياجميلي.. ✨</div>
 
-    <div class="container" id="mainHeart">
+    <div class="heart-container" id="mainHeart">
         <svg viewBox="0 0 100 100">
             <path class="heart-path" d="M50,88 C50,88 10,57 10,32 C10,13 32,10 50,30 C68,10 90,13 90,32 C90,57 50,88 50,88 Z"></path>
         </svg>
@@ -144,54 +147,15 @@
     </div>
 
     <script>
-        // --- إعداد النجوم ---
-        const canvas = document.getElementById('starsCanvas');
-        const ctx = canvas.getContext('2d');
-        let stars = [];
+        const body = document.getElementById('body');
+        const instruction = document.getElementById('instruction');
+        const mainHeart = document.getElementById('mainHeart');
+        let activated = false;
 
-        function initCanvas() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-            stars = [];
-            for(let i=0; i<150; i++) stars.push(new Star());
-        }
-        window.addEventListener('resize', initCanvas);
-
-        class Star {
-            constructor() {
-                this.x = Math.random() * window.innerWidth;
-                this.y = Math.random() * window.innerHeight;
-                this.size = Math.random() * 2;
-                this.alpha = Math.random();
-                this.fadeSpeed = Math.random() * 0.02 + 0.005;
-            }
-            draw() {
-                ctx.fillStyle = `rgba(255, 255, 255, ${this.alpha})`;
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                ctx.fill();
-            }
-            update() {
-                this.alpha += this.fadeSpeed;
-                if (this.alpha > 1 || this.alpha < 0) this.fadeSpeed = -this.fadeSpeed;
-            }
-        }
-
-        initCanvas(); // التشغيل الأولي
-
-        function animateStars() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            stars.forEach(s => { s.draw(); s.update(); });
-            requestAnimationFrame(animateStars);
-        }
-        animateStars();
-
-        // --- وظائف المؤثرات الخاصة ---
-
-        // 1. إنشاء انفجار الورد
+        // --- وظيفة انفجار الورد (المعاد كتابتها) ---
         function createRoseBurst(startX, startY) {
             const flowers = ['🌹', '🌸', '💐', '🌺'];
-            const burstCount = 80; // عدد الورود في الانفجار
+            const burstCount = 100; // عدد الورود في الانفجار
 
             for (let i = 0; i < burstCount; i++) {
                 const flower = document.createElement('div');
@@ -200,11 +164,11 @@
                 
                 // حساب اتجاه عشوائي بقوة مختلفة
                 const angle = Math.random() * Math.PI * 2;
-                const force = Math.random() * 400 + 100; // قوة الانفجار
+                const force = Math.random() * 450 + 100; // قوة الانفجار
                 const dx = Math.cos(angle) * force;
                 const dy = Math.sin(angle) * force;
 
-                // إعدادات البداية والنهاية للأنميشن
+                // إعدادات الأنميشن عبر CSS variables
                 flower.style.left = startX + 'px';
                 flower.style.top = startY + 'px';
                 flower.style.setProperty('--dx', dx + 'px');
@@ -212,40 +176,45 @@
                 flower.style.setProperty('--rotation', (Math.random() * 720 - 360) + 'deg');
                 flower.style.setProperty('--scale', Math.random() * 1.5 + 0.5);
                 
-                // مدة عشوائية للأنميشن لتبدو طبيعية أكثر
-                flower.style.animationDuration = (Math.random() * 1.5 + 1) + 's';
-                flower.style.animationTimingFunction = 'cubic-bezier(0.1, 0.8, 0.3, 1)'; // حركة سريعة ثم تتباطأ
+                // مدة عشوائية للأنميشن
+                flower.style.animationDuration = (Math.random() * 1.5 + 1.2) + 's';
                 
-                document.body.appendChild(flower);
+                body.appendChild(flower);
+                
+                // إضافة الفئة التي تشغل الأنميشن
+                // نستخدم setTimeout لضمان أن المتصفح قد قام برسم العنصر أولاً
+                setTimeout(() => {
+                    flower.classList.add('flower-burst');
+                }, 10);
+
                 // إزالة العنصر بعد انتهاء الأنميشن
-                setTimeout(() => flower.remove(), 2500);
+                setTimeout(() => flower.remove(), 2700);
             }
         }
 
-        // 2. إنشاء مطر القلوب
+        // --- وظيفة مطر القلوب ---
         function createFallingHeart() {
             const heart = document.createElement('div');
             heart.innerHTML = '❤️';
             heart.className = 'falling-heart';
             heart.style.left = Math.random() * 100 + 'vw';
             heart.style.top = '-20px'; // البداية من فوق الشاشة
-            heart.style.animationDuration = (Math.random() * 3 + 2) + 's'; // سرعات مختلفة
+            heart.style.animationDuration = (Math.random() * 3 + 2.5) + 's'; // سرعات مختلفة
             heart.style.opacity = Math.random() * 0.7 + 0.3; // شفافية مختلفة
-            document.body.appendChild(heart);
-            setTimeout(() => heart.remove(), 5000);
+            body.appendChild(heart);
+            setTimeout(() => heart.remove(), 5500);
         }
 
         // --- الوظيفة الرئيسية لتشغيل كل شيء ---
-        let activated = false;
         function startEverything(e) {
             if (activated) return; // منع التشغيل المتكرر
             activated = true;
             
             // 1. إخفاء نص التعليمات
-            document.getElementById('instruction').style.display = 'none';
+            instruction.style.display = 'none';
             
             // 2. تفعيل أنميشن القلب الكبير والنص
-            document.getElementById('mainHeart').classList.add('active');
+            mainHeart.classList.add('active');
             
             // 3. تشغيل انفجار الورود فوراً من مكان الضغط
             createRoseBurst(e.clientX, e.clientY);
@@ -253,11 +222,28 @@
             // 4. بدء مطر القلوب المستمر
             setInterval(createFallingHeart, 300);
 
-            // 5. الانتقال للتليجرام بعد انتهاء العرض (10 ثواني)
+            // 5. الانتقال للتليجرام بعد انتهاء العرض (11 ثانية)
             setTimeout(() => {
                 window.location.href = 'https://t.me/mnshtrk';
-            }, 10000);
+            }, 11000);
         }
+
+        // --- تسجيل المستمعين للأحداث (اللمس والضغط) ---
+        // اللمس على الموبايل
+        body.addEventListener('touchstart', (e) => {
+            // e.touches[0] يحتوي على إحداثيات اللمسة الأولى
+            if (!activated) {
+                startEverything(e.touches[0]);
+                e.preventDefault(); // منع المتصفح من معالجة اللمسة كضغطة ماوس
+            }
+        }, { passive: false });
+
+        // الضغط بالماوس (للكمبيوتر)
+        body.addEventListener('mousedown', (e) => {
+            if (!activated) {
+                startEverything(e);
+            }
+        });
     </script>
 </body>
 </html>
