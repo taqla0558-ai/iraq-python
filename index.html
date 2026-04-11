@@ -37,6 +37,7 @@
             color: white;
             text-align: center;
             width: 220px;
+            outline: none;
         }
 
         button {
@@ -67,28 +68,21 @@
 
         .heart-container.active { display: flex; }
 
-        .heart-container.pulsing {
-            animation: heartPulse 2s infinite alternate ease-in-out;
-        }
-
         svg { width: 100%; height: 320px; overflow: visible; }
 
         .heart-path {
             fill: none;
-            stroke: transparent; /* مخفي في البداية */
+            stroke: transparent;
             stroke-width: 3;
-            stroke-dasharray: 1000;
-            stroke-dashoffset: 1000;
         }
 
-        /* تحول القلب للون الأحمر فقط بعد اكتمال رسم الألعاب النارية */
+        /* امتلاء القلب بالأحمر بعد الرسم */
         .pulsing .heart-path {
-            fill: rgba(255, 30, 30, 0.5);
+            fill: rgba(255, 30, 30, 0.6);
             stroke: #ff1e1e;
-            transition: fill 1.5s ease;
+            transition: fill 2s ease;
         }
 
-        /* جزيئات الورود والقلوب المتساقطة */
         .falling-item {
             position: absolute;
             top: -50px;
@@ -101,7 +95,6 @@
             to { transform: translateY(110vh) rotate(360deg); opacity: 0; }
         }
 
-        /* شرارات رسم القلب */
         .sparkle-draw {
             position: absolute;
             width: 8px;
@@ -110,7 +103,7 @@
             border-radius: 50%;
             box-shadow: 0 0 15px gold, 0 0 30px orange;
             pointer-events: none;
-            z-index: 16;
+            z-index: 100;
         }
 
         .bubbles-img {
@@ -143,19 +136,21 @@
             transition: opacity 1.5s ease;
         }
 
+        .heart-container.pulsing {
+            animation: heartPulse 2s infinite alternate ease-in-out;
+        }
+
         @keyframes heartPulse {
             0% { transform: translate(-50%, -50%) scale(1); filter: drop-shadow(0 0 15px #ff0000); }
             100% { transform: translate(-50%, -50%) scale(1.08); filter: drop-shadow(0 0 40px #ff0055); }
         }
 
-        /* جزيئات انفجار النجوم */
         .firework-particle {
             position: absolute;
             pointer-events: none;
             width: 5px;
             height: 5px;
             border-radius: 50%;
-            box-shadow: 0 0 10px white;
         }
 
         @keyframes fireworkBurst {
@@ -179,48 +174,44 @@
             <text x="50" y="45" class="svg-text">ونبض قلبي</text>
             <text x="50" y="60" id="svg-name" class="svg-text" style="fill:#ff1e1e; font-size:10px;"></text>
         </svg>
-        <img src="48444d0b37ba2d7bb13c2bb0ecd45b7f.jpg" class="bubbles-img" alt="Bubbles" onerror="this.src='https://raw.githubusercontent.com/aqla0558-ai/iraq-python/main/48444d0b37ba2d7bb13c2bb0ecd45b7f.jpg'">
+        <img src="48444d0b37ba2d7bb13c2bb0ecd45b7f.jpg" class="bubbles-img" alt="Bubbles" onerror="this.src='1000215507.jpg'">
     </div>
 
     <script>
-        // 1. دالة تساقط الورود والقلوب
         function startFalling() {
-            const items = ['🌹', '❤️', '🌸', '💖', '🌺'];
+            const items = ['🌹', '❤️', '🌸', '💖'];
             setInterval(() => {
                 const f = document.createElement('div');
                 f.className = 'falling-item';
                 f.innerHTML = items[Math.floor(Math.random() * items.length)];
                 f.style.left = Math.random() * 100 + 'vw';
                 f.style.fontSize = Math.random() * 20 + 20 + 'px';
-                f.style.duration = Math.random() * 3 + 2 + 's';
-                f.style.animationDuration = f.style.duration;
+                f.style.animationDuration = Math.random() * 3 + 2 + 's';
                 document.body.appendChild(f);
                 setTimeout(() => f.remove(), 5000);
-            }, 150);
+            }, 200);
         }
 
-        // 2. دالة انفجار النجوم (طفار نجم)
         function createFireworkBurst() {
             const colors = ['#ffeb3b', '#ffffff', '#ff1e1e', '#00e5ff'];
             const x = window.innerWidth / 2;
             const y = window.innerHeight / 2;
-            for (let i = 0; i < 100; i++) {
+            for (let i = 0; i < 80; i++) {
                 const p = document.createElement('div');
                 p.className = 'firework-particle';
                 p.style.background = colors[Math.floor(Math.random() * colors.length)];
                 p.style.left = x + 'px'; p.style.top = y + 'px';
                 const angle = Math.random() * Math.PI * 2;
-                const dist = Math.random() * 350 + 50;
+                const dist = Math.random() * 300 + 50;
                 p.style.setProperty('--dx', Math.cos(angle) * dist + 'px');
                 p.style.setProperty('--dy', Math.sin(angle) * dist + 'px');
-                p.style.animation = `fireworkBurst 2s forwards ease-out`;
+                p.style.animation = `fireworkBurst 1.5s forwards ease-out`;
                 document.body.appendChild(p);
-                setTimeout(() => p.remove(), 2000);
+                setTimeout(() => p.remove(), 1500);
             }
         }
 
-        // 3. دالة رسم القلب بالألعاب النارية
-        function drawHeartWithFireworks() {
+        function drawHeartWithSparkles() {
             const path = document.getElementById('heartPath');
             const length = path.getTotalLength();
             let currentLen = 0;
@@ -230,20 +221,16 @@
                 const matrix = svg.getScreenCTM();
                 const screenPoint = point.matrixTransform(matrix);
                 
-                // إنشاء "شرارة" عند كل نقطة رسم
                 const s = document.createElement('div');
                 s.className = 'sparkle-draw';
                 s.style.left = screenPoint.x + 'px';
                 s.style.top = screenPoint.y + 'px';
                 document.body.appendChild(s);
-                
-                // تأثير انفجار صغير لكل شرارة
-                setTimeout(() => s.remove(), 400);
+                setTimeout(() => s.remove(), 500);
 
-                currentLen += length / 80;
+                currentLen += length / 100;
                 if (currentLen >= length) {
                     clearInterval(interval);
-                    // بعد اكتمال الرسم بالألعاب النارية، يظهر القلب الأحمر وينبض
                     document.getElementById('mainHeart').classList.add('pulsing');
                 }
             }, 40);
@@ -256,22 +243,16 @@
             document.getElementById('name-screen').style.opacity = '0';
             setTimeout(() => {
                 document.getElementById('name-screen').style.display = 'none';
-                
-                // ابدأ تساقط الورود فوراً
                 startFalling();
-                // ابدأ انفجار النجوم الكبير
                 createFireworkBurst();
                 
                 setTimeout(() => {
                     document.getElementById('svg-name').textContent = name + " ❤️";
-                    const heartCont = document.getElementById('mainHeart');
-                    heartCont.classList.add('active');
-                    
-                    // ابدأ رسم القلب بشرارات "طفار النجم"
-                    drawHeartWithFireworks();
-                    
-                    setTimeout(() => window.location.href = 'https://t.me/mnshtrk', 18000);
-                }, 5000); // الانتظار 5 ثواني كما طلبت
+                    document.getElementById('mainHeart').style.display = 'flex';
+                    document.getElementById('mainHeart').classList.add('active');
+                    drawHeartWithSparkles();
+                    setTimeout(() => window.location.href = 'https://t.me/mnshtrk', 20000);
+                }, 5000);
             }, 1000);
         }
     </script>
