@@ -17,10 +17,8 @@
             font-family: 'Cairo', sans-serif;
             overflow: hidden;
             color: white;
-            -webkit-tap-highlight-color: transparent;
         }
 
-        /* واجهة إدخال الاسم */
         #name-screen {
             text-align: center;
             z-index: 200;
@@ -30,8 +28,6 @@
             transition: opacity 1s ease;
         }
 
-        h2 { font-size: 24px; margin-bottom: 20px; text-shadow: 0 0 10px #ff1e1e; }
-
         input {
             padding: 12px;
             font-size: 18px;
@@ -40,24 +36,20 @@
             background: rgba(255, 255, 255, 0.1);
             color: white;
             text-align: center;
-            outline: none;
             width: 220px;
         }
 
         button {
-            display: block;
-            margin: 20px auto;
+            margin-top: 20px;
             padding: 10px 40px;
-            font-size: 18px;
             background: #ff1e1e;
             color: white;
             border: none;
             border-radius: 25px;
             cursor: pointer;
-            box-shadow: 0 0 15px rgba(255, 30, 30, 0.5);
+            font-size: 18px;
         }
 
-        /* حاوية القلب */
         .heart-container {
             position: absolute;
             width: 350px; 
@@ -86,7 +78,6 @@
             stroke-width: 3;
             stroke-dasharray: 1000;
             stroke-dashoffset: 1000;
-            transition: fill 1s ease 3.5s;
         }
 
         .active .heart-path {
@@ -95,10 +86,8 @@
 
         .pulsing .heart-path {
             fill: rgba(255, 30, 30, 0.6);
-            stroke: #ff1e1e;
         }
 
-        /* تأثير النجوم المتساقطة */
         .sparkle {
             position: absolute;
             width: 6px;
@@ -107,7 +96,6 @@
             border-radius: 50%;
             box-shadow: 0 0 10px white, 0 0 20px #ff1e1e;
             pointer-events: none;
-            z-index: 15;
         }
 
         .bubbles-img {
@@ -118,7 +106,6 @@
             margin-top: -50px;
             opacity: 0;
             z-index: 12;
-            box-shadow: 0 0 25px #ff1e1e;
             object-fit: cover;
             background: #000;
         }
@@ -133,7 +120,6 @@
             font-weight: bold;
             font-size: 8px;
             text-anchor: middle;
-            dominant-baseline: middle;
             opacity: 0;
         }
 
@@ -152,14 +138,12 @@
             100% { transform: translate(-50%, -50%) scale(1.08); filter: drop-shadow(0 0 40px #ff0055); }
         }
 
-        /* جزيئات الألعاب النارية */
         .firework-particle {
             position: absolute;
             pointer-events: none;
             width: 4px;
             height: 4px;
             border-radius: 50%;
-            z-index: 150;
         }
 
         @keyframes fireworkBurst {
@@ -188,7 +172,7 @@
 
     <script>
         function createFireworkBurst() {
-            const colors = ['#ff1e1e', '#ffeb3b', '#ffffff', '#ff4081'];
+            const colors = ['#ff1e1e', '#ffeb3b', '#ffffff'];
             for (let b = 0; b < 3; b++) {
                 setTimeout(() => {
                     const x = window.innerWidth / 2;
@@ -224,11 +208,7 @@
                 s.style.left = screenPoint.x + 'px';
                 s.style.top = screenPoint.y + 'px';
                 document.body.appendChild(s);
-                setTimeout(() => {
-                    s.style.opacity = '0';
-                    s.style.transition = 'opacity 0.5s';
-                    setTimeout(() => s.remove(), 500);
-                }, 200);
+                setTimeout(() => s.remove(), 500);
                 currentLen += length / 100;
                 if (currentLen >= length) clearInterval(interval);
             }, 35);
