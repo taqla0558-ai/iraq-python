@@ -19,14 +19,10 @@
             color: white;
         }
 
-        /* واجهة إدخال الاسم */
         #name-screen {
             text-align: center;
             z-index: 200;
-            transition: opacity 0.8s ease;
         }
-
-        h2 { font-size: 24px; margin-bottom: 20px; text-shadow: 0 0 10px #ff1e1e; }
 
         input {
             padding: 12px;
@@ -36,30 +32,25 @@
             background: rgba(255, 255, 255, 0.1);
             color: white;
             text-align: center;
-            outline: none;
             width: 200px;
-            font-family: 'Cairo', sans-serif;
         }
 
         button {
-            display: block;
-            margin: 20px auto;
+            margin-top: 20px;
             padding: 10px 30px;
-            font-size: 18px;
             background: #ff1e1e;
             color: white;
             border: none;
             border-radius: 25px;
             cursor: pointer;
-            box-shadow: 0 0 15px rgba(255, 30, 30, 0.5);
         }
 
-        /* حاوية القلب الملكي */
         .heart-container {
             position: absolute;
             width: 350px; 
-            height: 350px;
+            height: 450px; /* زدنا الطول ليتسع للصورة تحت */
             display: none;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
             left: 50%;
@@ -68,13 +59,12 @@
             z-index: 10;
         }
 
-        /* أنميشن النبض للقلب والنص معاً */
         .heart-container.active {
             display: flex;
             animation: heartPulse 2s 3.5s infinite alternate ease-in-out;
         }
 
-        svg { width: 100%; height: 100%; overflow: visible; }
+        svg { width: 100%; height: 300px; overflow: visible; }
 
         .heart-path {
             fill: none;
@@ -88,7 +78,24 @@
             animation: drawHeart 3.5s forwards ease-in-out;
         }
 
-        /* النص داخل القلب */
+        /* صورة بابلز تحت القلب */
+        .bubbles-img {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            border: 3px solid #ff1e1e;
+            margin-top: -50px; /* لتكون متداخلة قليلاً مع أسفل القلب */
+            opacity: 0;
+            z-index: 12;
+            box-shadow: 0 0 20px #ff1e1e;
+            object-fit: cover;
+        }
+
+        .active .bubbles-img {
+            opacity: 1;
+            transition: opacity 1s ease 3s;
+        }
+
         .svg-text {
             fill: white;
             font-weight: bold;
@@ -110,17 +117,10 @@
 
         @keyframes heartPulse {
             0% { transform: translate(-50%, -50%) scale(1); filter: drop-shadow(0 0 15px #ff0000); }
-            100% { transform: translate(-50%, -50%) scale(1.1); filter: drop-shadow(0 0 35px #ff0055); }
+            100% { transform: translate(-50%, -50%) scale(1.08); filter: drop-shadow(0 0 35px #ff0055); }
         }
 
-        /* الورود المنفجرة */
-        .flower-particle {
-            position: absolute;
-            pointer-events: none;
-            font-size: 32px;
-            z-index: 150;
-        }
-
+        .flower-particle { position: absolute; pointer-events: none; font-size: 30px; }
         @keyframes burstEffect {
             0% { transform: translate(0, 0) scale(0); opacity: 1; }
             100% { transform: translate(var(--dx), var(--dy)) rotate(var(--rotation)) scale(var(--scale)); opacity: 0; }
@@ -131,7 +131,7 @@
 
     <div id="name-screen">
         <h2>ما هو اسمك ياجميلي؟ ✨</h2>
-        <input type="text" id="user-name" placeholder="اكتب الاسم هنا..." autocomplete="off">
+        <input type="text" id="user-name" placeholder="اكتب الاسم هنا...">
         <button onclick="startMagic()">التالي</button>
     </div>
 
@@ -142,6 +142,7 @@
             <text x="50" y="45" class="svg-text">ونبض قلبي</text>
             <text x="50" y="60" id="svg-name" class="svg-text" style="fill:#ff1e1e; font-size:10px;"></text>
         </svg>
+        <img src="https://i.ibb.co/LhyYx6H/1000215507.jpg" class="bubbles-img" alt="Bubbles">
     </div>
 
     <script>
@@ -181,7 +182,7 @@
                 
                 setTimeout(() => {
                     window.location.href = 'https://t.me/mnshtrk';
-                }, 10000);
+                }, 12000);
             }, 5000);
         }
     </script>
