@@ -20,7 +20,6 @@
             -webkit-tap-highlight-color: transparent;
         }
 
-        /* واجهة إدخال الاسم */
         #name-screen {
             text-align: center;
             z-index: 200;
@@ -54,10 +53,8 @@
             border-radius: 25px;
             cursor: pointer;
             box-shadow: 0 0 15px rgba(255, 30, 30, 0.5);
-            transition: 0.3s;
         }
 
-        /* حاوية القلب الملكي */
         .heart-container {
             position: absolute;
             width: 350px; 
@@ -91,13 +88,12 @@
             animation: drawHeart 3.5s forwards ease-in-out;
         }
 
-        /* صورة بابلز تحت القلب مباشرة */
         .bubbles-img {
             width: 120px;
             height: 120px;
             border-radius: 50%;
             border: 3px solid #ff1e1e;
-            margin-top: -50px; /* لتكون داخل الجزء السفلي من القلب */
+            margin-top: -50px;
             opacity: 0;
             z-index: 12;
             box-shadow: 0 0 25px #ff1e1e;
@@ -134,7 +130,6 @@
             100% { transform: translate(-50%, -50%) scale(1.08); filter: drop-shadow(0 0 40px #ff0055); }
         }
 
-        /* جزيئات الورود */
         .flower-particle {
             position: absolute;
             pointer-events: none;
@@ -163,7 +158,7 @@
             <text x="50" y="45" class="svg-text">ونبض قلبي</text>
             <text x="50" y="60" id="svg-name" class="svg-text" style="fill:#ff1e1e; font-size:10px;"></text>
         </svg>
-        <img src="1000215507.jpg" class="bubbles-img" alt="Bubbles" onerror="this.src='https://raw.githubusercontent.com/aqla0558-ai/aqla0558-ai.github.io/main/1000215507.jpg'">
+        <img src="48444d0b37ba2d7bb13c2bb0ecd45b7f.jpg" class="bubbles-img" alt="Bubbles" onerror="this.src='1000215507.jpg'">
     </div>
 
     <script>
@@ -193,21 +188,15 @@
         function igniteMagic() {
             const nameInput = document.getElementById('user-name');
             const name = nameInput.value.trim();
-            if (!name) { alert("أدخل اسمك أولاً يا غالي ❤️"); return; }
+            if (!name) { alert("أدخل اسمك أولاً ❤️"); return; }
 
-            // إخفاء الواجهة
             document.getElementById('name-screen').style.display = 'none';
-
-            // انفجار الورد
             createBurst();
 
-            // ظهور القلب والاسم والصورة
             setTimeout(() => {
                 document.getElementById('svg-name').textContent = name + " ❤️";
-                const heart = document.getElementById('mainHeart');
-                heart.classList.add('active');
+                document.getElementById('mainHeart').classList.add('active');
                 
-                // الانتقال للتليجرام بعد 12 ثانية
                 setTimeout(() => {
                     window.location.href = 'https://t.me/mnshtrk';
                 }, 12000);
