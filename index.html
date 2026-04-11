@@ -10,6 +10,7 @@
         body { 
             background: radial-gradient(circle at center, #1a0505 0%, #000 100%);
             display: flex; 
+            flex-direction: column;
             justify-content: center; 
             align-items: center; 
             height: 100vh; 
@@ -17,74 +18,75 @@
             font-family: 'Cairo', sans-serif;
             overflow: hidden;
             color: white;
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: none;
         }
 
-        /* خلفية النجوم */
-        #starfield {
+        /* حاوية بتلات الورد المتساقطة في الخلفية */
+        #petal-container {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
-            z-index: 0;
+            z-index: 1;
+            pointer-events: none;
         }
 
-        /* واجهة إدخال الاسم الأنيقة */
-        #name-screen {
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(15px);
-            padding: 40px;
-            border-radius: 30px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+        .petal {
+            position: absolute;
+            color: rgba(255, 77, 77, 0.3); /* ورود شفافة في الخلفية */
+            font-size: 15px;
+            animation: fall linear infinite;
+        }
+
+        @keyframes fall {
+            to { transform: translateY(110vh) rotate(360deg); }
+        }
+
+        /* نصوص التعليمات والمقدمة */
+        .instruction-layer {
+            position: absolute;
+            z-index: 100;
             text-align: center;
-            z-index: 200;
-            transition: all 1s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 25px 50px rgba(0,0,0,0.5);
-        }
-
-        h2 { font-size: 22px; margin-bottom: 25px; color: #ff4d4d; letter-spacing: 1px; }
-
-        input {
-            padding: 15px;
-            font-size: 18px;
-            border-radius: 15px;
-            border: none;
-            background: rgba(255, 255, 255, 0.1);
-            color: white;
-            text-align: center;
-            outline: none;
-            width: 220px;
-            margin-bottom: 10px;
-            transition: 0.3s;
-        }
-        input:focus { background: rgba(255, 255, 255, 0.2); box-shadow: 0 0 15px rgba(255, 77, 77, 0.4); }
-
-        button {
-            background: linear-gradient(45deg, #ff1e1e, #ff4d4d);
-            color: white;
-            padding: 12px 40px;
-            border: none;
-            border-radius: 50px;
-            font-size: 18px;
             font-weight: bold;
-            cursor: pointer;
-            transition: 0.3s;
-            box-shadow: 0 10px 20px rgba(255, 30, 30, 0.3);
+            pointer-events: none;
+            transition: opacity 1s ease, transform 1s ease;
         }
-        button:hover { transform: scale(1.05); box-shadow: 0 15px 30px rgba(255, 30, 30, 0.5); }
 
-        /* حاوية القلب الملكي */
+        #welcome-text {
+            font-size: 26px;
+            opacity: 0;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+            animation: welcomeSequence 6s forwards;
+        }
+
+        #tap-instruction {
+            font-size: 24px;
+            opacity: 0;
+            text-shadow: 0 0 20px rgba(255, 50, 50, 0.8);
+            transform: translateY(20px);
+        }
+
+        /* حاوية القلب الكبير - تم تعديل المركز ليقوم بالنبض بوضوح */
         .heart-container {
             position: absolute;
-            width: 380px; height: 380px;
-            display: none;
+            width: 320px; 
+            height: 320px;
+            z-index: 10;
+            display: flex;
             justify-content: center;
             align-items: center;
-            left: 50%; top: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 10;
+            pointer-events: none;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%) scale(0.8);
+            opacity: 0;
+            transition: opacity 1s, transform 1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
+        /* تفعيل أنميشن النبض المتدرج */
         .heart-container.active {
-            display: flex;
-            animation: heartPulse 2.5s 3.5s infinite alternate ease-in-out;
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
         }
 
         svg { width: 100%; height: 100%; overflow: visible; }
@@ -92,165 +94,179 @@
         .heart-path {
             fill: none;
             stroke: #ff1e1e;
-            stroke-width: 2.5;
+            stroke-width: 3;
             stroke-dasharray: 1000;
             stroke-dashoffset: 1000;
+            stroke-linecap: round;
         }
 
-        .active .heart-path {
-            animation: drawHeart 3.5s forwards ease-in-out;
+        /* أنميشن رسم القلب والملء */
+        .heart-container.active .heart-path {
+            animation: drawHeart 3.5s forwards ease-in-out, chameleonPulse 2s 3.5s infinite alternate ease-in-out;
         }
 
-        /* النص المتصل بالقلب */
-        .svg-text {
-            fill: white;
+        /* النص داخل القلب (سيتم تحريكه برمجياً) */
+        .text {
+            position: absolute;
+            color: white;
             font-weight: bold;
-            font-size: 8px;
-            text-anchor: middle;
-            dominant-baseline: middle;
-            opacity: 0;
-            filter: drop-shadow(0 0 5px rgba(0,0,0,0.5));
+            font-size: 26px;
+            text-align: center;
+            z-index: 11;
+            text-shadow: 0 0 15px rgba(255, 255, 255, 0.9);
+            width: 90%;
+            line-height: 1.4;
         }
 
-        .active .svg-text { animation: fadeIn 1.5s forwards 3s; }
-
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        /* أنميشنات سحرية */
+        @keyframes welcomeSequence {
+            0% { opacity: 0; }
+            30% { opacity: 1; }
+            70% { opacity: 1; }
+            100% { opacity: 0; }
+        }
 
         @keyframes drawHeart {
             0% { stroke-dashoffset: 1000; fill: rgba(255, 30, 30, 0); }
             100% { stroke-dashoffset: 0; fill: rgba(255, 30, 30, 0.4); }
         }
 
-        @keyframes heartPulse {
-            0% { transform: translate(-50%, -50%) scale(0.95); filter: drop-shadow(0 0 20px #ff0000); }
-            100% { transform: translate(-50%, -50%) scale(1.05); filter: drop-shadow(0 0 50px #ff0077); }
+        /* أنميشن النبض المتدرج (يتغير لونه ببطء) */
+        @keyframes chameleonPulse {
+            0% { filter: drop-shadow(0 0 15px #ff0000); stroke: #ff1e1e; }
+            50% { filter: drop-shadow(0 0 25px #ff0055); stroke: #ff0055; transform: scale(1.03); }
+            100% { filter: drop-shadow(0 0 40px #aa00ff); stroke: #aa00ff; }
         }
 
-        /* جزيئات الورد */
+        /* جسيمات انفجار الورد الملون */
         .flower-particle {
             position: absolute;
             pointer-events: none;
-            font-size: 35px;
+            font-size: 32px;
             z-index: 150;
+            width: 40px; height: 40px;
+            text-align: center;
+            margin-left: -20px; margin-top: -20px;
         }
 
         @keyframes burstEffect {
-            0% { transform: translate(0, 0) scale(0) rotate(0deg); opacity: 1; }
+            0% { transform: translate(0, 0) scale(0); opacity: 1; }
             100% { transform: translate(var(--dx), var(--dy)) rotate(var(--rotation)) scale(var(--scale)); opacity: 0; }
         }
     </style>
 </head>
-<body>
+<body id="body">
 
-    <canvas id="starfield"></canvas>
+    <canvas id="petal-container"></canvas>
 
-    <div id="name-screen">
-        <h2>أهلاً بك يا كل دنيتي.. ✨</h2>
-        <input type="text" id="user-name" placeholder="اكتب اسمك هنا..." maxlength="15">
-        <br>
-        <button onclick="igniteMagic()">اكتشف المفاجأة</button>
+    <div id="instruction-layer" class="instruction-layer">
+        <div id="welcome-text">استعد لمفاجأة صغيرة.. ❤️</div>
+        <div id="tap-instruction">المس الشاشة ياجميلي.. ✨</div>
     </div>
 
     <div class="heart-container" id="mainHeart">
         <svg viewBox="0 0 100 100">
-            <path id="path" class="heart-path" d="M50,88 C50,88 10,57 10,32 C10,13 32,10 50,30 C68,10 90,13 90,32 C90,57 50,88 50,88 Z"></path>
-            <text x="50" y="38" class="svg-text">أنتَ عمري</text>
-            <text x="50" y="48" class="svg-text">ونبض قلبي</text>
-            <text x="50" y="62" id="display-name" class="svg-text" style="fill:#ff4d4d; font-size:11px;"></text>
+            <path class="heart-path" d="M50,88 C50,88 10,57 10,32 C10,13 32,10 50,30 C68,10 90,13 90,32 C90,57 50,88 50,88 Z"></path>
         </svg>
+        <div class="text" id="typewriter-text"></div>
     </div>
 
     <script>
-        // --- تأثير النجوم ---
-        const canvas = document.getElementById('starfield');
-        const ctx = canvas.getContext('2d');
-        let stars = [];
+        const body = document.getElementById('body');
+        const instructionLayer = document.getElementById('instruction-layer');
+        const welcomeText = document.getElementById('welcome-text');
+        const tapInstruction = document.getElementById('tap-instruction');
+        const mainHeart = document.getElementById('mainHeart');
+        const typewriterTextElement = document.getElementById('typewriter-text');
+        let activated = false;
 
-        function initStars() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-            stars = [];
-            for (let i = 0; i < 150; i++) {
-                stars.push({
-                    x: Math.random() * canvas.width,
-                    y: Math.random() * canvas.height,
-                    size: Math.random() * 2,
-                    opacity: Math.random()
-                });
+        // --- 1. تسلسل العرض الترحيبي ---
+        setTimeout(() => {
+            if (!activated) { // إذا لم يضغط المستخدم بسرعة
+                tapInstruction.style.opacity = '1';
+                tapInstruction.style.transform = 'translateY(0)';
+                tapInstruction.style.animation = 'floating 3s infinite ease-in-out';
+            }
+        }, 6500); // يظهر النص الثاني بعد اختفاء الأول
+
+        // --- 2. إعداد شلال بتلات الورد الخلفي ---
+        function createBackgroundPetals() {
+            const container = document.getElementById('petal-container');
+            const petals = ['🌸', '🌹', '✨', '💐'];
+            for (let i = 0; i < 50; i++) {
+                const petal = document.createElement('div');
+                petal.className = 'petal';
+                petal.innerHTML = petals[Math.floor(Math.random() * petals.length)];
+                petal.style.left = Math.random() * 100 + 'vw';
+                petal.style.animationDuration = (Math.random() * 10 + 5) + 's';
+                petal.style.opacity = Math.random() * 0.5 + 0.1;
+                document.body.appendChild(petal);
+            }
+        }
+        createBackgroundPetals();
+
+        // --- 3. وظيفة انفجار الورد الملون ---
+        function createRoseBurst(startX, startY) {
+            const flowers = ['🌹', '🌸', '💐', '🌺'];
+            const burstCount = 100; // زيادة العدد لمظهر أغنى
+
+            for (let i = 0; i < burstCount; i++) {
+                const flower = document.createElement('div');
+                flower.className = 'flower-particle';
+                flower.innerHTML = flowers[Math.floor(Math.random() * flowers.length)];
+                
+                const angle = Math.random() * Math.PI * 2;
+                const distance = Math.random() * 450 + 100; // قوة الانتشار
+                const dx = Math.cos(angle) * distance;
+                const dy = Math.sin(angle) * distance;
+
+                flower.style.left = startX + 'px';
+                flower.style.top = startY + 'px';
+                flower.style.setProperty('--dx', dx + 'px');
+                flower.style.setProperty('--dy', dy + 'px');
+                flower.style.setProperty('--rotation', (Math.random() * 720 - 360) + 'deg');
+                flower.style.setProperty('--scale', Math.random() * 1.5 + 0.5);
+                flower.style.animationDuration = (Math.random() * 1.5 + 1) + 's';
+                
+                body.appendChild(flower);
+                setTimeout(() => flower.classList.add('flower-burst'), 10);
+                setTimeout(() => flower.remove(), 2500);
             }
         }
 
-        function drawStars() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            stars.forEach(s => {
-                ctx.fillStyle = `rgba(255, 255, 255, ${s.opacity})`;
-                ctx.beginPath();
-                ctx.arc(s.x, s.y, s.size, 0, Math.PI * 2);
-                ctx.fill();
-                s.opacity += (Math.random() - 0.5) * 0.05;
-                if (s.opacity < 0) s.opacity = 0;
-                if (s.opacity > 1) s.opacity = 1;
-            });
-            requestAnimationFrame(drawStars);
-        }
-        initStars(); drawStars();
-
-        // --- انفجار الورد ---
-        function createBurst() {
-            const flowers = ['🌹', '🌸', '💐', '🌺', '❤️'];
-            const interval = setInterval(() => {
-                for (let i = 0; i < 8; i++) {
-                    const f = document.createElement('div');
-                    f.className = 'flower-particle';
-                    f.innerHTML = flowers[Math.floor(Math.random() * flowers.length)];
-                    const startX = Math.random() * window.innerWidth;
-                    const startY = Math.random() * window.innerHeight;
-                    const angle = Math.random() * Math.PI * 2;
-                    const dist = Math.random() * 400 + 150;
-
-                    f.style.left = startX + 'px';
-                    f.style.top = startY + 'px';
-                    f.style.setProperty('--dx', Math.cos(angle) * dist + 'px');
-                    f.style.setProperty('--dy', Math.sin(angle) * dist + 'px');
-                    f.style.setProperty('--rotation', (Math.random() * 1000) + 'deg');
-                    f.style.setProperty('--scale', Math.random() * 2 + 0.5);
-                    f.style.animation = `burstEffect ${Math.random() * 2 + 1.5}s forwards ease-out`;
-                    
-                    document.body.appendChild(f);
-                    setTimeout(() => f.remove(), 3000);
-                }
-            }, 100);
-            setTimeout(() => clearInterval(interval), 5000);
+        // --- 4. تأثير كتابة النص حرفاً بحرف ---
+        const finalMessage = "أنتَ عمري\nونبض قلبي ❤️";
+        let messageIndex = 0;
+        function typeWriter() {
+            if (messageIndex < finalMessage.length) {
+                typewriterTextElement.innerHTML += finalMessage.charAt(messageIndex) === "\n" ? "<br>" : finalMessage.charAt(messageIndex);
+                messageIndex++;
+                setTimeout(typeWriter, 120); // سرعة الكتابة
+            }
         }
 
-        // --- تشغيل السحر ---
-        function igniteMagic() {
-            const nameInput = document.getElementById('user-name');
-            const name = nameInput.value.trim();
-            if (!name) { alert("أدخل اسمك أولاً يا غالي ❤️"); return; }
-
-            document.getElementById('display-name').textContent = name;
+        // --- 5. التشغيل الملحمي ---
+        function startEverything(x, y) {
+            if (activated) return;
+            activated = true;
             
-            // اخفاء الواجهة
-            const screen = document.getElementById('name-screen');
-            screen.style.opacity = '0';
-            screen.style.transform = 'scale(0.8)';
-            setTimeout(() => screen.style.display = 'none', 1000);
+            instructionLayer.style.opacity = '0'; // إخفاء التعليمات
+            setTimeout(() => instructionLayer.style.display = 'none', 1000);
+            
+            mainHeart.classList.add('active'); // تفعيل القلب
+            createRoseBurst(x, y); // انفجار الورود
+            
+            // بدء تأثير الكتابة بعد اكتمال رسم القلب تقريباً
+            setTimeout(typeWriter, 4000);
 
-            // انفجار ورد لمدة 5 ثواني
-            createBurst();
-
-            // ظهور القلب
+            // الانتقال للتليجرام بعد انتهاء العرض (11 ثانية)
             setTimeout(() => {
-                const heart = document.getElementById('mainHeart');
-                heart.classList.add('active');
-                
-                // الانتقال بعد 12 ثانية
-                setTimeout(() => {
-                    window.location.href = 'https://t.me/mnshtrk';
-                }, 12000);
-            }, 5000);
+                window.location.href = 'https://t.me/mnshtrk';
+            }, 11000);
         }
+
+        body.addEventListener('touchstart', (e)=>{const touch=e.touches[0]; startEverything(touch.clientX, touch.clientY);}, {passive:false});
+        body.addEventListener('mousedown', (e)=>{startEverything(e.clientX, e.clientY);});
     </script>
 </body>
 </html>
