@@ -17,12 +17,19 @@
             font-family: 'Cairo', sans-serif;
             overflow: hidden;
             color: white;
+            -webkit-tap-highlight-color: transparent;
         }
 
+        /* واجهة إدخال الاسم */
         #name-screen {
             text-align: center;
             z-index: 200;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 30px;
+            border-radius: 20px;
         }
+
+        h2 { font-size: 24px; margin-bottom: 20px; text-shadow: 0 0 10px #ff1e1e; }
 
         input {
             padding: 12px;
@@ -32,23 +39,29 @@
             background: rgba(255, 255, 255, 0.1);
             color: white;
             text-align: center;
-            width: 200px;
+            outline: none;
+            width: 220px;
         }
 
         button {
-            margin-top: 20px;
-            padding: 10px 30px;
+            display: block;
+            margin: 20px auto;
+            padding: 10px 40px;
+            font-size: 18px;
             background: #ff1e1e;
             color: white;
             border: none;
             border-radius: 25px;
             cursor: pointer;
+            box-shadow: 0 0 15px rgba(255, 30, 30, 0.5);
+            transition: 0.3s;
         }
 
+        /* حاوية القلب الملكي */
         .heart-container {
             position: absolute;
             width: 350px; 
-            height: 450px; /* زدنا الطول ليتسع للصورة تحت */
+            height: 480px;
             display: none;
             flex-direction: column;
             justify-content: center;
@@ -64,7 +77,7 @@
             animation: heartPulse 2s 3.5s infinite alternate ease-in-out;
         }
 
-        svg { width: 100%; height: 300px; overflow: visible; }
+        svg { width: 100%; height: 320px; overflow: visible; }
 
         .heart-path {
             fill: none;
@@ -78,17 +91,18 @@
             animation: drawHeart 3.5s forwards ease-in-out;
         }
 
-        /* صورة بابلز تحت القلب */
+        /* صورة بابلز تحت القلب مباشرة */
         .bubbles-img {
-            width: 100px;
-            height: 100px;
+            width: 120px;
+            height: 120px;
             border-radius: 50%;
             border: 3px solid #ff1e1e;
-            margin-top: -50px; /* لتكون متداخلة قليلاً مع أسفل القلب */
+            margin-top: -50px; /* لتكون داخل الجزء السفلي من القلب */
             opacity: 0;
             z-index: 12;
-            box-shadow: 0 0 20px #ff1e1e;
+            box-shadow: 0 0 25px #ff1e1e;
             object-fit: cover;
+            background: #000;
         }
 
         .active .bubbles-img {
@@ -117,10 +131,17 @@
 
         @keyframes heartPulse {
             0% { transform: translate(-50%, -50%) scale(1); filter: drop-shadow(0 0 15px #ff0000); }
-            100% { transform: translate(-50%, -50%) scale(1.08); filter: drop-shadow(0 0 35px #ff0055); }
+            100% { transform: translate(-50%, -50%) scale(1.08); filter: drop-shadow(0 0 40px #ff0055); }
         }
 
-        .flower-particle { position: absolute; pointer-events: none; font-size: 30px; }
+        /* جزيئات الورود */
+        .flower-particle {
+            position: absolute;
+            pointer-events: none;
+            font-size: 32px;
+            z-index: 150;
+        }
+
         @keyframes burstEffect {
             0% { transform: translate(0, 0) scale(0); opacity: 1; }
             100% { transform: translate(var(--dx), var(--dy)) rotate(var(--rotation)) scale(var(--scale)); opacity: 0; }
@@ -131,8 +152,8 @@
 
     <div id="name-screen">
         <h2>ما هو اسمك ياجميلي؟ ✨</h2>
-        <input type="text" id="user-name" placeholder="اكتب الاسم هنا...">
-        <button onclick="startMagic()">التالي</button>
+        <input type="text" id="user-name" placeholder="اكتب اسمك هنا..." autocomplete="off">
+        <button onclick="igniteMagic()">التالي</button>
     </div>
 
     <div class="heart-container" id="mainHeart">
@@ -142,26 +163,26 @@
             <text x="50" y="45" class="svg-text">ونبض قلبي</text>
             <text x="50" y="60" id="svg-name" class="svg-text" style="fill:#ff1e1e; font-size:10px;"></text>
         </svg>
-        <img src="https://i.ibb.co/LhyYx6H/1000215507.jpg" class="bubbles-img" alt="Bubbles">
+        <img src="1000215507.jpg" class="bubbles-img" alt="Bubbles" onerror="this.src='https://raw.githubusercontent.com/aqla0558-ai/aqla0558-ai.github.io/main/1000215507.jpg'">
     </div>
 
     <script>
         function createBurst() {
-            const flowers = ['🌹', '🌸', '💐', '🌺'];
+            const flowers = ['🌹', '🌸', '💐', '🌺', '❤️'];
             const interval = setInterval(() => {
-                for (let i = 0; i < 5; i++) {
+                for (let i = 0; i < 6; i++) {
                     const f = document.createElement('div');
                     f.className = 'flower-particle';
                     f.innerHTML = flowers[Math.floor(Math.random() * flowers.length)];
                     f.style.left = Math.random() * 100 + 'vw';
                     f.style.top = Math.random() * 100 + 'vh';
                     const angle = Math.random() * Math.PI * 2;
-                    const dist = Math.random() * 300 + 100;
+                    const dist = Math.random() * 400 + 100;
                     f.style.setProperty('--dx', Math.cos(angle) * dist + 'px');
                     f.style.setProperty('--dy', Math.sin(angle) * dist + 'px');
                     f.style.setProperty('--rotation', Math.random() * 360 + 'deg');
                     f.style.setProperty('--scale', Math.random() * 1.5 + 0.5);
-                    f.style.animation = `burstEffect 2s forwards`;
+                    f.style.animation = `burstEffect 2s forwards ease-out`;
                     document.body.appendChild(f);
                     setTimeout(() => f.remove(), 2000);
                 }
@@ -169,17 +190,24 @@
             setTimeout(() => clearInterval(interval), 5000);
         }
 
-        function startMagic() {
-            const name = document.getElementById('user-name').value;
-            if (!name) return alert("اكتب اسمك أولاً ❤️");
+        function igniteMagic() {
+            const nameInput = document.getElementById('user-name');
+            const name = nameInput.value.trim();
+            if (!name) { alert("أدخل اسمك أولاً يا غالي ❤️"); return; }
 
+            // إخفاء الواجهة
             document.getElementById('name-screen').style.display = 'none';
+
+            // انفجار الورد
             createBurst();
 
+            // ظهور القلب والاسم والصورة
             setTimeout(() => {
                 document.getElementById('svg-name').textContent = name + " ❤️";
-                document.getElementById('mainHeart').classList.add('active');
+                const heart = document.getElementById('mainHeart');
+                heart.classList.add('active');
                 
+                // الانتقال للتليجرام بعد 12 ثانية
                 setTimeout(() => {
                     window.location.href = 'https://t.me/mnshtrk';
                 }, 12000);
