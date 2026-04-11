@@ -20,12 +20,14 @@
             -webkit-tap-highlight-color: transparent;
         }
 
+        /* واجهة إدخال الاسم */
         #name-screen {
             text-align: center;
             z-index: 200;
-            background: rgba(0, 0, 0, 0.8);
+            background: rgba(0, 0, 0, 0.9);
             padding: 30px;
             border-radius: 20px;
+            transition: opacity 1s ease;
         }
 
         h2 { font-size: 24px; margin-bottom: 20px; text-shadow: 0 0 10px #ff1e1e; }
@@ -55,6 +57,7 @@
             box-shadow: 0 0 15px rgba(255, 30, 30, 0.5);
         }
 
+        /* حاوية القلب الملكي */
         .heart-container {
             position: absolute;
             width: 350px; 
@@ -71,7 +74,11 @@
 
         .heart-container.active {
             display: flex;
-            animation: heartPulse 2s 3.5s infinite alternate ease-in-out;
+        }
+
+        /* أنميشن النبض للقلب بعد اكتمال الرسم */
+        .heart-container.pulsing {
+            animation: heartPulse 2s infinite alternate ease-in-out;
         }
 
         svg { width: 100%; height: 320px; overflow: visible; }
@@ -82,12 +89,34 @@
             stroke-width: 3;
             stroke-dasharray: 1000;
             stroke-dashoffset: 1000;
+            transition: fill 1s ease 3.5s; /* تحول اللون بعد الرسم */
         }
 
+        /* تأثير رسم القلب بالنجوم */
         .active .heart-path {
-            animation: drawHeart 3.5s forwards ease-in-out;
+            animation: drawHeartWithStars 3.5s forwards ease-in-out;
         }
 
+        /* تحويل اللون للأحمر الممتلئ */
+        .pulsing .heart-path {
+            fill: rgba(255, 30, 30, 0.6);
+            stroke: #ff1e1e;
+        }
+
+        /* جزيئات النجوم التي ترسم القلب */
+        .sparkle {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background: white;
+            border-radius: 50%;
+            box-shadow: 0 0 10px white, 0 0 20px #ff1e1e;
+            pointer-events: none;
+            opacity: 0;
+            z-index: 15;
+        }
+
+        /* صورة بابلز تحت القلب */
         .bubbles-img {
             width: 120px;
             height: 120px;
@@ -101,9 +130,9 @@
             background: #000;
         }
 
-        .active .bubbles-img {
+        .pulsing .bubbles-img {
             opacity: 1;
-            transition: opacity 1s ease 3s;
+            transition: opacity 1s ease;
         }
 
         .svg-text {
@@ -115,14 +144,14 @@
             opacity: 0;
         }
 
-        .active .svg-text {
+        .pulsing .svg-text {
             opacity: 1;
-            transition: opacity 1s ease 2.5s;
+            transition: opacity 1s ease;
         }
 
-        @keyframes drawHeart {
-            0% { stroke-dashoffset: 1000; fill: rgba(255, 30, 30, 0); }
-            100% { stroke-dashoffset: 0; fill: rgba(255, 30, 30, 0.5); }
+        @keyframes drawHeartWithStars {
+            0% { stroke-dashoffset: 1000; }
+            100% { stroke-dashoffset: 0; }
         }
 
         @keyframes heartPulse {
@@ -130,16 +159,20 @@
             100% { transform: translate(-50%, -50%) scale(1.08); filter: drop-shadow(0 0 40px #ff0055); }
         }
 
-        .flower-particle {
+        /* جزيئات الألعاب النارية */
+        .firework-particle {
             position: absolute;
             pointer-events: none;
-            font-size: 32px;
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
             z-index: 150;
+            box-shadow: 0 0 10px white;
         }
 
-        @keyframes burstEffect {
-            0% { transform: translate(0, 0) scale(0); opacity: 1; }
-            100% { transform: translate(var(--dx), var(--dy)) rotate(var(--rotation)) scale(var(--scale)); opacity: 0; }
+        @keyframes fireworkBurst {
+            0% { transform: translate(0, 0) scale(1); opacity: 1; }
+            100% { transform: translate(var(--dx), var(--dy)) scale(0); opacity: 0; }
         }
     </style>
 </head>
@@ -153,36 +186,81 @@
 
     <div class="heart-container" id="mainHeart">
         <svg viewBox="0 0 100 100">
-            <path class="heart-path" d="M50,88 C50,88 10,57 10,32 C10,13 32,10 50,30 C68,10 90,13 90,32 C90,57 50,88 50,88 Z"></path>
+            <path class="heart-path" id="heartPath" d="M50,88 C50,88 10,57 10,32 C10,13 32,10 50,30 C68,10 90,13 90,32 C90,57 50,88 50,88 Z"></path>
             <text x="50" y="35" class="svg-text">أنتَ عمري</text>
             <text x="50" y="45" class="svg-text">ونبض قلبي</text>
             <text x="50" y="60" id="svg-name" class="svg-text" style="fill:#ff1e1e; font-size:10px;"></text>
         </svg>
-        <img src="48444d0b37ba2d7bb13c2bb0ecd45b7f.jpg" class="bubbles-img" alt="Bubbles" onerror="this.src='1000215507.jpg'">
+        <img src="https://raw.githubusercontent.com/aqla0558-ai/iraq-python/main/48444d0b37ba2d7bb13c2bb0ecd45b7f.jpg" class="bubbles-img" alt="Bubbles" onerror="this.src='1000215507.jpg'">
     </div>
 
     <script>
-        function createBurst() {
-            const flowers = ['🌹', '🌸', '💐', '🌺', '❤️'];
+        // دالة الألعاب النارية
+        function createFireworkBurst() {
+            const colors = ['#ff1e1e', '#ffeb3b', '#2196f3', '#4caf50', '#ffffff'];
+            const container = document.body;
+
+            for (let b = 0; b < 3; b++) { // 3 انفجارات متتالية
+                setTimeout(() => {
+                    const centerX = window.innerWidth / 2;
+                    const centerY = window.innerHeight / 2;
+
+                    for (let i = 0; i < 50; i++) { // 50 جزيء لكل انفجار
+                        const p = document.createElement('div');
+                        p.className = 'firework-particle';
+                        p.style.background = colors[Math.floor(Math.random() * colors.length)];
+                        p.style.left = centerX + 'px';
+                        p.style.top = centerY + 'px';
+
+                        const angle = Math.random() * Math.PI * 2;
+                        const dist = Math.random() * 200 + 50;
+                        p.style.setProperty('--dx', Math.cos(angle) * dist + 'px');
+                        p.style.setProperty('--dy', Math.sin(angle) * dist + 'px');
+                        
+                        p.style.animation = `fireworkBurst ${Math.random() * 1 + 1}s forwards ease-out`;
+                        container.appendChild(p);
+                        setTimeout(() => p.remove(), 2000);
+                    }
+                }, b * 1000); // فرق ثانية بين كل انفجار
+            }
+        }
+
+        // دالة الشرارات التي تتبع رسم القلب
+        function createHeartSparkles() {
+            const path = document.getElementById('heartPath');
+            const length = path.getTotalLength();
+            const container = document.body;
+
+            let currentLen = 0;
+            const step = length / 100; // عدد النجوم في الرسم
+
             const interval = setInterval(() => {
-                for (let i = 0; i < 6; i++) {
-                    const f = document.createElement('div');
-                    f.className = 'flower-particle';
-                    f.innerHTML = flowers[Math.floor(Math.random() * flowers.length)];
-                    f.style.left = Math.random() * 100 + 'vw';
-                    f.style.top = Math.random() * 100 + 'vh';
-                    const angle = Math.random() * Math.PI * 2;
-                    const dist = Math.random() * 400 + 100;
-                    f.style.setProperty('--dx', Math.cos(angle) * dist + 'px');
-                    f.style.setProperty('--dy', Math.sin(angle) * dist + 'px');
-                    f.style.setProperty('--rotation', Math.random() * 360 + 'deg');
-                    f.style.setProperty('--scale', Math.random() * 1.5 + 0.5);
-                    f.style.animation = `burstEffect 2s forwards ease-out`;
-                    document.body.appendChild(f);
-                    setTimeout(() => f.remove(), 2000);
+                const point = path.getPointAtLength(currentLen);
+                
+                // تحويل إحداثيات SVG لإحداثيات الشاشة
+                const svg = path.ownerSVGElement;
+                const matrix = svg.getScreenCTM();
+                const screenPoint = point.matrixTransform(matrix);
+
+                const s = document.createElement('div');
+                s.className = 'sparkle';
+                s.style.left = screenPoint.x + 'px';
+                s.style.top = screenPoint.y + 'px';
+                s.style.opacity = 1;
+                container.appendChild(s);
+
+                // تلاشي النجمة بعد ظهورها
+                setTimeout(() => {
+                    s.style.opacity = 0;
+                    s.style.transition = 'opacity 0.5s ease';
+                    setTimeout(() => s.remove(), 500);
+                }, 100);
+
+                currentLen += step;
+                if (currentLen >= length) {
+                    clearInterval(interval);
                 }
-            }, 100);
-            setTimeout(() => clearInterval(interval), 5000);
+            }, 35); // سرعة رسم النجوم (تطابق أنميشن CSS)
         }
 
         function igniteMagic() {
@@ -190,17 +268,31 @@
             const name = nameInput.value.trim();
             if (!name) { alert("أدخل اسمك أولاً ❤️"); return; }
 
-            document.getElementById('name-screen').style.display = 'none';
-            createBurst();
+            // 1. إخفاء الواجهة
+            document.getElementById('name-screen').style.opacity = '0';
+            setTimeout(() => document.getElementById('name-screen').style.display = 'none', 1000);
 
+            // 2. بدء الألعاب النارية
+            createFireworkBurst();
+
+            // 3. ظهور القلب وبدء الرسم النجمي بعد الألعاب النارية
             setTimeout(() => {
                 document.getElementById('svg-name').textContent = name + " ❤️";
-                document.getElementById('mainHeart').classList.add('active');
-                
+                const heartCont = document.getElementById('mainHeart');
+                heartCont.classList.add('active'); // بدء أنميشن CSS لرسم الخط
+                createHeartSparkles(); // بدء تأثير الشرارات النجمية
+
+                // 4. تحويل القلب للأحمر وبدء النبض بعد اكتمال الرسم
                 setTimeout(() => {
-                    window.location.href = 'https://t.me/mnshtrk';
-                }, 12000);
-            }, 5000);
+                    heartCont.classList.add('pulsing');
+                    
+                    // 5. الانتقال للتليجرام بعد 12 ثانية من النبض
+                    setTimeout(() => {
+                        window.location.href = 'https://t.me/mnshtrk';
+                    }, 12000);
+                }, 3500); // وقت اكتمال الرسم
+
+            }, 5000); // وقت انتظار الألعاب النارية
         }
     </script>
 </body>
