@@ -3,257 +3,229 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>إلى الأبد ✨</title>
+    <title>عالمك السحري ✨</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap');
 
         body { 
-            background: #000;
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-            height: 100vh; 
-            margin: 0; 
-            font-family: 'Cairo', sans-serif;
-            overflow: hidden;
-            color: white;
+            background: radial-gradient(circle, #1a0a0a, #000);
+            display: flex; justify-content: center; align-items: center; 
+            height: 100vh; margin: 0; font-family: 'Cairo', sans-serif;
+            overflow: hidden; color: white; touch-action: none;
+        }
+
+        /* 1. تأثير النيون المتغير */
+        @keyframes neonGlow {
+            0% { filter: drop-shadow(0 0 15px #ff1e1e); }
+            50% { filter: drop-shadow(0 0 30px #ff0055); }
+            100% { filter: drop-shadow(0 0 15px #9c27b0); }
         }
 
         #name-screen {
-            text-align: center;
-            z-index: 200;
-            background: rgba(0, 0, 0, 0.9);
-            padding: 30px;
-            border-radius: 20px;
-            transition: opacity 1s ease;
+            text-align: center; z-index: 200; background: rgba(0, 0, 0, 0.9);
+            padding: 40px; border-radius: 30px; border: 1px solid #ff1e1e;
+            box-shadow: 0 0 20px rgba(255, 30, 30, 0.4);
+            transition: all 1s ease; width: 85%; max-width: 400px;
         }
 
         input {
-            padding: 12px;
-            font-size: 18px;
-            border-radius: 10px;
-            border: 2px solid #ff1e1e;
-            background: rgba(255, 255, 255, 0.1);
-            color: white;
-            text-align: center;
-            width: 220px;
-            outline: none;
+            padding: 15px; font-size: 18px; border-radius: 15px;
+            border: 2px solid #ff1e1e; background: rgba(255, 255, 255, 0.05);
+            color: white; text-align: center; width: 90%; outline: none; margin-bottom: 20px;
         }
 
         button {
-            margin-top: 20px;
-            padding: 10px 40px;
-            background: #ff1e1e;
-            color: white;
-            border: none;
-            border-radius: 25px;
-            cursor: pointer;
-            font-size: 18px;
-            box-shadow: 0 0 15px #ff1e1e;
+            padding: 12px 50px; background: linear-gradient(45deg, #ff1e1e, #ff0055);
+            color: white; border: none; border-radius: 30px; cursor: pointer;
+            font-size: 18px; font-weight: bold; box-shadow: 0 5px 15px rgba(255, 30, 30, 0.4);
         }
 
         .heart-container {
-            position: absolute;
-            width: 350px; 
-            height: 480px;
-            display: none;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            left: 50%;
-            top: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 10;
+            position: absolute; width: 320px; height: 450px;
+            display: none; flex-direction: column; justify-content: center;
+            align-items: center; left: 50%; top: 50%;
+            transform: translate(-50%, -50%); z-index: 10;
         }
 
-        .heart-container.active { display: flex; }
-
-        svg { width: 100%; height: 320px; overflow: visible; }
-
-        .heart-path {
-            fill: none;
-            stroke: transparent;
-            stroke-width: 3;
-        }
-
-        /* امتلاء القلب بالأحمر بعد الرسم */
-        .pulsing .heart-path {
-            fill: rgba(255, 30, 30, 0.6);
-            stroke: #ff1e1e;
-            transition: fill 2s ease;
-        }
-
-        .falling-item {
-            position: absolute;
-            top: -50px;
-            pointer-events: none;
-            z-index: 150;
-            animation: fall linear forwards;
-        }
-
-        @keyframes fall {
-            to { transform: translateY(110vh) rotate(360deg); opacity: 0; }
-        }
-
-        .sparkle-draw {
-            position: absolute;
-            width: 8px;
-            height: 8px;
-            background: gold;
-            border-radius: 50%;
-            box-shadow: 0 0 15px gold, 0 0 30px orange;
-            pointer-events: none;
-            z-index: 100;
-        }
-
-        .bubbles-img {
-            width: 120px;
-            height: 120px;
-            border-radius: 50%;
-            border: 3px solid #ff1e1e;
-            margin-top: -50px;
-            opacity: 0;
-            z-index: 12;
-            object-fit: cover;
-            background: #000;
-        }
-
-        .pulsing .bubbles-img {
-            opacity: 1;
-            transition: opacity 1.5s ease;
-        }
-
-        .svg-text {
-            fill: white;
-            font-weight: bold;
-            font-size: 8px;
-            text-anchor: middle;
-            opacity: 0;
-        }
-
-        .pulsing .svg-text {
-            opacity: 1;
-            transition: opacity 1.5s ease;
-        }
-
-        .heart-container.pulsing {
-            animation: heartPulse 2s infinite alternate ease-in-out;
+        .heart-container.pulsing { 
+            animation: heartPulse 2s infinite alternate ease-in-out, neonGlow 4s infinite; 
         }
 
         @keyframes heartPulse {
-            0% { transform: translate(-50%, -50%) scale(1); filter: drop-shadow(0 0 15px #ff0000); }
-            100% { transform: translate(-50%, -50%) scale(1.08); filter: drop-shadow(0 0 40px #ff0055); }
+            0% { transform: translate(-50%, -50%) scale(1); }
+            100% { transform: translate(-50%, -50%) scale(1.08); }
         }
 
-        .firework-particle {
-            position: absolute;
-            pointer-events: none;
-            width: 5px;
-            height: 5px;
-            border-radius: 50%;
+        /* 2. الجزيئات السحرية */
+        .sparkle {
+            position: absolute; width: 6px; height: 6px; background: gold;
+            border-radius: 50%; pointer-events: none; z-index: 100;
+            box-shadow: 0 0 10px gold, 0 0 20px orange;
         }
 
-        @keyframes fireworkBurst {
-            0% { transform: translate(0, 0) scale(1); opacity: 1; }
-            100% { transform: translate(var(--dx), var(--dy)) scale(0); opacity: 0; }
+        .svg-text { font-weight: bold; text-anchor: middle; }
+
+        #timer-box {
+            position: absolute; bottom: 30px; font-size: 14px; opacity: 0.7;
+            display: none; color: #fff; z-index: 100;
+        }
+
+        /* 3. الانفجار الختامي */
+        .final-explosion {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: white; z-index: 1000; display: none; opacity: 0;
+        }
+
+        #profile-img {
+            width: 110px; height: 110px; border-radius: 50%;
+            border: 3px solid #ff1e1e; margin-top: -30px;
+            opacity: 0; object-fit: cover; transition: opacity 2s;
+            background: #222;
         }
     </style>
 </head>
 <body>
 
     <div id="name-screen">
-        <h2>ما هو اسمك ياجميلي؟ ✨</h2>
+        <h2 id="welcome-msg">مرحباً بك في عالمي ✨</h2>
         <input type="text" id="user-name" placeholder="اكتب اسمك هنا..." autocomplete="off">
-        <button onclick="igniteMagic()">التالي</button>
+        <button onclick="igniteMagic()">اكتشف السحر</button>
     </div>
 
     <div class="heart-container" id="mainHeart">
-        <svg viewBox="0 0 100 100">
-            <path class="heart-path" id="heartPath" d="M50,88 C50,88 10,57 10,32 C10,13 32,10 50,30 C68,10 90,13 90,32 C90,57 50,88 50,88 Z"></path>
-            <text x="50" y="35" class="svg-text">أنتَ عمري</text>
-            <text x="50" y="45" class="svg-text">ونبض قلبي</text>
-            <text x="50" y="60" id="svg-name" class="svg-text" style="fill:#ff1e1e; font-size:10px;"></text>
+        <svg viewBox="0 0 100 100" style="width: 100%; height: 300px;">
+            <path id="heartPath" fill="none" stroke="transparent" stroke-width="3" 
+                  d="M50,88 C50,88 10,57 10,32 C10,13 32,10 50,30 C68,10 90,13 90,32 C90,57 50,88 50,88 Z"></path>
+            <text x="50" y="35" id="random-quote" class="svg-text" style="fill:white; font-size:6px; opacity:0;"></text>
+            <text x="50" y="55" id="svg-name" class="svg-text" style="fill:#ff1e1e; font-size:10px;"></text>
         </svg>
-        <img src="48444d0b37ba2d7bb13c2bb0ecd45b7f.jpg" class="bubbles-img" alt="Bubbles" onerror="this.src='1000215507.jpg'">
+        <img src="https://via.placeholder.com/150/ff1e1e/ffffff?text=❤️" id="profile-img">
     </div>
 
+    <div id="timer-box">سيفتح القفل خلال <span id="seconds">15</span> ثانية...</div>
+    <div class="final-explosion" id="explosion"></div>
+
+    <audio id="bg-music" src="https://www.soundjay.com/misc/sounds/magic-chime-01.mp3"></audio>
+
     <script>
-        function startFalling() {
-            const items = ['🌹', '❤️', '🌸', '💖'];
-            setInterval(() => {
-                const f = document.createElement('div');
-                f.className = 'falling-item';
-                f.innerHTML = items[Math.floor(Math.random() * items.length)];
-                f.style.left = Math.random() * 100 + 'vw';
-                f.style.fontSize = Math.random() * 20 + 20 + 'px';
-                f.style.animationDuration = Math.random() * 3 + 2 + 's';
-                document.body.appendChild(f);
-                setTimeout(() => f.remove(), 5000);
-            }, 200);
+        const quotes = [
+            "أنت أجمل ما حدث لي اليوم", 
+            "نبض قلبي يغني باسمك دائماً", 
+            "وجودك يجعل هذا العالم مكاناً أفضل", 
+            "سحر عيناك هو سر سعادتي"
+        ];
+        
+        // 4. ميزة اللمس السحري (Interactive Sparkles)
+        function handleMove(e) {
+            const x = e.pageX || e.touches[0].pageX;
+            const y = e.pageY || e.touches[0].pageY;
+            createSparkle(x, y);
         }
+        window.addEventListener('mousemove', handleMove);
+        window.addEventListener('touchmove', handleMove);
 
-        function createFireworkBurst() {
-            const colors = ['#ffeb3b', '#ffffff', '#ff1e1e', '#00e5ff'];
-            const x = window.innerWidth / 2;
-            const y = window.innerHeight / 2;
-            for (let i = 0; i < 80; i++) {
-                const p = document.createElement('div');
-                p.className = 'firework-particle';
-                p.style.background = colors[Math.floor(Math.random() * colors.length)];
-                p.style.left = x + 'px'; p.style.top = y + 'px';
-                const angle = Math.random() * Math.PI * 2;
-                const dist = Math.random() * 300 + 50;
-                p.style.setProperty('--dx', Math.cos(angle) * dist + 'px');
-                p.style.setProperty('--dy', Math.sin(angle) * dist + 'px');
-                p.style.animation = `fireworkBurst 1.5s forwards ease-out`;
-                document.body.appendChild(p);
-                setTimeout(() => p.remove(), 1500);
-            }
-        }
-
-        function drawHeartWithSparkles() {
-            const path = document.getElementById('heartPath');
-            const length = path.getTotalLength();
-            let currentLen = 0;
-            const interval = setInterval(() => {
-                const point = path.getPointAtLength(currentLen);
-                const svg = path.ownerSVGElement;
-                const matrix = svg.getScreenCTM();
-                const screenPoint = point.matrixTransform(matrix);
-                
-                const s = document.createElement('div');
-                s.className = 'sparkle-draw';
-                s.style.left = screenPoint.x + 'px';
-                s.style.top = screenPoint.y + 'px';
-                document.body.appendChild(s);
-                setTimeout(() => s.remove(), 500);
-
-                currentLen += length / 100;
-                if (currentLen >= length) {
-                    clearInterval(interval);
-                    document.getElementById('mainHeart').classList.add('pulsing');
-                }
-            }, 40);
+        function createSparkle(x, y) {
+            const s = document.createElement('div');
+            s.className = 'sparkle';
+            s.style.left = x + 'px'; 
+            s.style.top = y + 'px';
+            s.style.background = `hsl(${Math.random() * 360}, 100%, 70%)`;
+            document.body.appendChild(s);
+            setTimeout(() => s.remove(), 800);
         }
 
         function igniteMagic() {
-            const name = document.getElementById('user-name').value.trim();
+            const nameInput = document.getElementById('user-name');
+            const name = nameInput.value.trim();
             if (!name) return alert("أدخل اسمك أولاً ❤️");
 
+            // تشغيل الموسيقى
+            document.getElementById('bg-music').play().catch(() => {});
+
             document.getElementById('name-screen').style.opacity = '0';
+            
             setTimeout(() => {
                 document.getElementById('name-screen').style.display = 'none';
-                startFalling();
-                createFireworkBurst();
+                startFallingItems(); // 5. تأثير الورود المتساقطة
+                
+                // 6. رسالة عشوائية + الاسم
+                document.getElementById('random-quote').textContent = quotes[Math.floor(Math.random() * quotes.length)];
+                document.getElementById('svg-name').textContent = name + " ❤️";
+                
+                document.getElementById('mainHeart').style.display = 'flex';
+                drawHeart();
+            }, 1000);
+        }
+
+        // 7. رسم القلب بالـ SVG (نظام المسار)
+        function drawHeart() {
+            const path = document.getElementById('heartPath');
+            const length = path.getTotalLength();
+            path.style.stroke = "#ff1e1e";
+            path.style.strokeDasharray = length;
+            path.style.strokeDashoffset = length;
+            path.style.transition = "stroke-dashoffset 4s ease-in-out";
+            
+            setTimeout(() => {
+                path.style.strokeDashoffset = "0";
+                setTimeout(() => {
+                    // 8. تفعيل النبض والنيون
+                    document.getElementById('mainHeart').classList.add('pulsing');
+                    document.getElementById('random-quote').style.opacity = "1";
+                    document.getElementById('profile-img').style.opacity = "1";
+                    startCountdown();
+                }, 4000);
+            }, 100);
+        }
+
+        // 9. العداد التنازلي المطور
+        function startCountdown() {
+            const timerBox = document.getElementById('timer-box');
+            timerBox.style.display = 'block';
+            let time = 15;
+            const interval = setInterval(() => {
+                time--;
+                document.getElementById('seconds').textContent = time;
+                if(time <= 0) {
+                    clearInterval(interval);
+                    triggerFinalExplosion();
+                }
+            }, 1000);
+        }
+
+        // 10. الانفجار الأبيض قبل التحويل (سينمائي)
+        function triggerFinalExplosion() {
+            const exp = document.getElementById('explosion');
+            exp.style.display = 'block';
+            exp.style.transition = 'opacity 0.8s';
+            setTimeout(() => {
+                exp.style.opacity = '1';
+                setTimeout(() => {
+                    window.location.href = 'https://t.me/mnshtrk';
+                }, 800);
+            }, 10);
+        }
+
+        function startFallingItems() {
+            const icons = ['🌸', '✨', '❤️', '🌹', '💖'];
+            setInterval(() => {
+                const f = document.createElement('div');
+                f.style.position = 'absolute';
+                f.style.top = '-50px';
+                f.style.left = Math.random() * 100 + 'vw';
+                f.innerHTML = icons[Math.floor(Math.random() * icons.length)];
+                f.style.fontSize = Math.random() * 20 + 20 + 'px';
+                f.style.pointerEvents = 'none';
+                f.style.zIndex = '5';
+                f.style.transition = `transform ${Math.random() * 2 + 3}s linear, opacity 3s`;
+                document.body.appendChild(f);
                 
                 setTimeout(() => {
-                    document.getElementById('svg-name').textContent = name + " ❤️";
-                    document.getElementById('mainHeart').style.display = 'flex';
-                    document.getElementById('mainHeart').classList.add('active');
-                    drawHeartWithSparkles();
-                    setTimeout(() => window.location.href = 'https://t.me/mnshtrk', 20000);
-                }, 5000);
-            }, 1000);
+                    f.style.transform = `translateY(110vh) rotate(${Math.random() * 360}deg)`;
+                    f.style.opacity = '0';
+                }, 100);
+                setTimeout(() => f.remove(), 5000);
+            }, 300);
         }
     </script>
 </body>
