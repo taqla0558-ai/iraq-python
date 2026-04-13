@@ -3,44 +3,40 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>إمبراطورية السحر: الإصدار النهائي 👑</title>
+    <title>إمبراطورية السحر: الإصدار النهائي الأسطوري 💎</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap');
 
         :root { 
             --main: #ff1e1e; 
-            --secondary: #ffeb3b;
-            --glass: rgba(255, 255, 255, 0.07);
+            --gold: #ffeb3b; 
+            --glass: rgba(255, 255, 255, 0.08); 
         }
 
         body { 
             background: #000; color: white; font-family: 'Cairo', sans-serif;
             margin: 0; height: 100vh; overflow: hidden; display: flex; 
-            justify-content: center; align-items: center; perspective: 1200px;
+            justify-content: center; align-items: center; perspective: 1500px;
+            touch-action: none;
         }
 
         #bg-canvas { position: fixed; top: 0; left: 0; z-index: 1; pointer-events: none; }
 
         /* ميزة: واجهة الزجاج المتطورة */
         .glass-card {
-            background: var(--glass); backdrop-filter: blur(20px);
+            background: var(--glass); backdrop-filter: blur(25px);
             border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 40px; padding: 30px; text-align: center;
-            width: 85%; max-width: 400px; z-index: 100;
-            box-shadow: 0 25px 50px rgba(0,0,0,0.9);
+            width: 85%; max-width: 380px; z-index: 100;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.8);
             transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
-        /* ميزة: اختيار النمط (شخصي/إهداء) */
-        .mode-selector {
-            display: flex; gap: 10px; margin-bottom: 25px; justify-content: center;
-        }
-
+        .mode-selector { display: flex; gap: 10px; margin-bottom: 25px; justify-content: center; }
         .mode-btn {
-            padding: 10px 20px; border-radius: 25px; border: 1px solid #444;
-            cursor: pointer; font-size: 13px; transition: 0.4s; background: rgba(0,0,0,0.3);
+            padding: 10px 18px; border-radius: 20px; border: 1px solid #444;
+            cursor: pointer; font-size: 13px; transition: 0.3s; background: rgba(0,0,0,0.3);
         }
-
         .mode-btn.active { background: var(--main); border-color: var(--main); box-shadow: 0 0 15px var(--main); }
 
         input {
@@ -50,42 +46,36 @@
         }
         input:focus { border-color: var(--main); box-shadow: 0 0 10px var(--main); }
 
-        /* ميزة: بصمة الإصبع الضوئية */
+        /* ميزة: بصمة الإصبع مع خط المسح */
         .fp-container {
-            width: 90px; height: 90px; margin: 20px auto;
+            width: 85px; height: 85px; margin: 20px auto;
             border: 2px solid var(--main); border-radius: 50%;
             display: flex; justify-content: center; align-items: center;
             cursor: pointer; position: relative; box-shadow: 0 0 20px var(--main);
         }
-
         .scan-line {
             position: absolute; width: 80%; height: 3px; background: var(--main);
             box-shadow: 0 0 15px var(--main); animation: scanning 2s infinite; display: none;
         }
-
         @keyframes scanning { 0%, 100% { top: 20%; } 50% { top: 80%; } }
 
-        /* ميزة: عرض القلوب المتداخلة */
-        .heart-display {
-            position: absolute; display: none; flex-direction: column;
-            align-items: center; z-index: 50; width: 100%;
-        }
-
+        /* ميزة: مساحة العرض السحري */
+        .magic-area { position: absolute; display: none; flex-direction: column; align-items: center; z-index: 50; }
         .heart-svg { 
-            width: 350px; height: 350px; 
-            filter: drop-shadow(0 0 25px var(--main));
-            transition: transform 0.1s ease;
+            width: 320px; height: 320px; 
+            filter: drop-shadow(0 0 20px var(--main));
+            transition: transform 0.1s;
         }
+        .pulsing { animation: heartPulse 1.2s infinite alternate cubic-bezier(0.4, 0, 0.2, 1); }
+        @keyframes heartPulse { to { transform: scale(1.1); filter: drop-shadow(0 0 40px var(--main)); } }
 
-        .typing-box { 
-            font-size: 18px; color: var(--secondary); margin-top: 15px; 
-            text-align: center; max-width: 320px; font-weight: bold;
-            text-shadow: 0 0 10px rgba(255, 235, 59, 0.5);
-        }
+        /* ميزة: الانعكاس السفلي الفخم */
+        .reflection { transform: scaleY(-1); opacity: 0.15; filter: blur(5px); margin-top: -60px; pointer-events: none; }
 
-        #days-info { font-size: 14px; color: #fff; margin-top: 10px; opacity: 0; transition: 2s; }
+        .typing-box { font-size: 18px; color: var(--gold); margin-top: 20px; font-weight: bold; text-align: center; max-width: 320px; }
+        #days-info { font-size: 14px; color: #fff; margin-top: 5px; opacity: 0; transition: 2s; }
 
-        .white-flash {
+        .fade-screen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: white; z-index: 1000; display: none; opacity: 0;
         }
@@ -96,186 +86,188 @@
     <canvas id="bg-canvas"></canvas>
 
     <div class="glass-card" id="ui-card">
-        <h3>محراب السحر الملكي ✨</h3>
-        
+        <h3>محراب الجمال الملكي ✨</h3>
         <div class="mode-selector">
             <div class="mode-btn active" id="btn-self" onclick="setMode('self')">سحر شخصي</div>
-            <div class="mode-btn" id="btn-gift" onclick="setMode('إهداء خاص 🎁')">إهداء خاص 🎁</div>
+            <div class="mode-btn" id="btn-gift" onclick="setMode('gift')">إهداء خاص 🎁</div>
         </div>
-
-        <div id="input-group">
-            <input type="text" id="user-name" placeholder="أدخل اسمك الكريم...">
-            <input type="text" id="gift-name" placeholder="اسم الشخص المهدى له..." style="display: none;">
-        </div>
+        <input type="text" id="name1" placeholder="أدخل اسمك الكريم...">
+        <input type="text" id="name2" placeholder="اسم المهدى له..." style="display: none;">
         
-        <p style="font-size: 12px; margin: 10px 0 0;">تاريخ الميلاد (لحساب أيام الجمال):</p>
-        <input type="date" id="birth-date">
+        <p style="font-size: 11px; margin: 10px 0 0;">تاريخ الميلاد (لحساب أيام الجمال):</p>
+        <input type="date" id="b-date">
         
-        <div class="fp-container" onmousedown="startScan()" onmouseup="stopScan()" ontouchstart="startScan()" ontouchend="stopScan()">
-            <div class="scan-line" id="scanner"></div>
-            <span style="font-size: 40px; z-index: 2;">👆</span>
+        <div class="fp-container" id="fp-touch" onmousedown="handleStart()" onmouseup="handleEnd()" ontouchstart="handleStart()" ontouchend="handleEnd()">
+            <div class="scan-line" id="line"></div>
+            <span style="font-size: 35px; z-index: 2;">👆</span>
         </div>
-        <p id="status-msg" style="font-size: 13px; color: #aaa;">اضغط مطولاً للبصمة لتعميد السحر</p>
+        <p id="hint" style="font-size: 13px; color: #888;">بصمتك تعمد السحر...</p>
     </div>
 
-    <div class="heart-display" id="magic-area">
-        <svg class="heart-svg" id="svg-element" viewBox="0 0 200 150">
-            <path id="p1" fill="none" stroke-width="2.5" d="M100,120 C100,120 60,90 60,65 C60,45 82,42 100,62 C118,42 140,45 140,65 C140,90 100,120 100,120 Z"></path>
-            <path id="p2" fill="none" stroke-width="2" d="M110,120 C110,120 70,90 70,65 C70,45 92,42 110,62 C128,42 150,45 150,65 C150,90 110,120 110,120 Z" style="display: none; opacity: 0.5;"></path>
-            
-            <text x="100" y="75" id="txt1" fill="white" font-size="8" text-anchor="middle" font-weight="bold"></text>
-            <text x="115" y="85" id="txt2" fill="var(--secondary)" font-size="6.5" text-anchor="middle" font-weight="bold" style="display: none;"></text>
-        </svg>
+    <div class="magic-area" id="display">
+        <div id="heart-wrapper" style="display: flex; flex-direction: column; align-items: center;">
+            <svg class="heart-svg" id="svg-obj" viewBox="0 0 200 150">
+                <path id="path1" fill="none" stroke-width="3" d="M100,120 C100,120 60,90 60,65 C60,45 82,42 100,62 C118,42 140,45 140,65 C140,90 100,120 100,120 Z"></path>
+                <path id="path2" fill="none" stroke-width="2.5" d="M110,120 C110,120 70,90 70,65 C70,45 92,42 110,62 C128,42 150,45 150,65 C150,90 110,120 110,120 Z" style="display:none; opacity:0.6;"></path>
+                
+                <text x="100" y="75" id="t1" fill="white" font-size="8" text-anchor="middle" font-weight="bold"></text>
+                <text x="115" y="85" id="t2" fill="var(--gold)" font-size="6.5" text-anchor="middle" font-weight="bold" style="display:none;"></text>
+            </svg>
+            <div class="reflection" id="mirror"></div>
+        </div>
         <div id="days-info"></div>
-        <div class="typing-box" id="final-msg"></div>
+        <div class="typing-box" id="msg"></div>
     </div>
 
-    <div class="white-flash" id="flash-effect"></div>
+    <div class="fade-screen" id="flash"></div>
 
-    <audio id="snd-scan" src="https://www.soundjay.com/buttons/button-20.mp3"></audio>
-    <audio id="snd-magic" src="https://www.soundjay.com/misc/sounds/magic-chime-01.mp3"></audio>
+    <audio id="sfx-scan" src="https://www.soundjay.com/buttons/button-20.mp3"></audio>
+    <audio id="sfx-magic" src="https://www.soundjay.com/misc/sounds/magic-chime-01.mp3"></audio>
 
     <script>
-        let currentMode = 'self';
+        let mode = 'self';
         let scanTimer;
 
-        // ميزة: تفاعل 3D مع حركة الجهاز/الماوس
+        // ميزة: تفاعل 3D مع الماوس
         document.addEventListener('mousemove', (e) => {
             const card = document.getElementById('ui-card');
-            const svg = document.getElementById('svg-element');
-            let rotateX = (window.innerHeight / 2 - e.pageY) / 15;
-            let rotateY = (e.pageX - window.innerWidth / 2) / 15;
-            card.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
-            if(svg) svg.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+            const svg = document.getElementById('svg-obj');
+            let x = (window.innerWidth / 2 - e.pageX) / 20;
+            let y = (window.innerHeight / 2 - e.pageY) / 20;
+            card.style.transform = `rotateY(${-x}deg) rotateX(${y}deg)`;
+            if(svg) svg.style.transform = `rotateY(${-x}deg) rotateX(${y}deg)`;
         });
 
-        function setMode(m) {
-            currentMode = m;
-            document.getElementById('btn-self').classList.toggle('active', m === 'self');
-            document.getElementById('btn-gift').classList.toggle('active', m !== 'self');
-            document.getElementById('gift-name').style.display = (m === 'self') ? 'none' : 'block';
-        }
-
-        function startScan() {
-            if(!document.getElementById('user-name').value) return alert("يرجى كتابة الاسم أولاً!");
-            document.getElementById('scanner').style.display = 'block';
-            document.getElementById('status-msg').innerText = "جاري استحضار الأطياف...";
-            document.getElementById('snd-scan').play().catch(()=>{});
-            scanTimer = setTimeout(triggerMagic, 2500);
-        }
-
-        function stopScan() {
-            clearTimeout(scanTimer);
-            document.getElementById('scanner').style.display = 'none';
-            if(document.getElementById('status-msg').innerText !== "تم القبول ✅") {
-                document.getElementById('status-msg').innerText = "اضغط مطولاً للبصمة لتعميد السحر";
+        // ميزة: انفجار القلوب عند اللمس
+        window.addEventListener('touchstart', (e) => createHeartBurst(e.touches[0].clientX, e.touches[0].clientY));
+        function createHeartBurst(x, y) {
+            for(let i=0; i<6; i++) {
+                const h = document.createElement('div');
+                h.innerHTML = "❤";
+                h.style.cssText = `position:fixed; left:${x}px; top:${y}px; color:var(--main); pointer-events:none; z-index:1000; transition:all 0.8s ease-out;`;
+                document.body.appendChild(h);
+                setTimeout(() => {
+                    h.style.transform = `translate(${(Math.random()-0.5)*120}px, ${(Math.random()-0.5)*120}px) scale(0)`;
+                    h.style.opacity = "0";
+                }, 10);
+                setTimeout(() => h.remove(), 800);
             }
         }
 
-        function triggerMagic() {
-            document.getElementById('status-msg').innerText = "تم القبول ✅";
+        function setMode(m) {
+            mode = m;
+            document.getElementById('btn-self').classList.toggle('active', m==='self');
+            document.getElementById('btn-gift').classList.toggle('active', m==='gift');
+            document.getElementById('name2').style.display = (m==='gift') ? 'block' : 'none';
+        }
+
+        function handleStart() {
+            if(!document.getElementById('name1').value) return;
+            document.getElementById('line').style.display = 'block';
+            document.getElementById('hint').innerText = "جاري قراءة نبض الروح...";
+            document.getElementById('sfx-scan').play().catch(()=>{});
+            if(navigator.vibrate) navigator.vibrate([100, 50, 100]); // ميزة الاهتزاز
+            scanTimer = setTimeout(startMagicProcess, 2500);
+        }
+
+        function handleEnd() {
+            clearTimeout(scanTimer);
+            document.getElementById('line').style.display = 'none';
+            if(document.getElementById('hint').innerText !== "تم القبول ✅") document.getElementById('hint').innerText = "بصمتك تعمد السحر...";
+        }
+
+        function startMagicProcess() {
+            document.getElementById('hint').innerText = "تم القبول ✅";
+            const n1 = document.getElementById('name1').value;
+            const n2 = document.getElementById('name2').value;
             
             // ميزة: نطق الاسم AI
-            const n1 = document.getElementById('user-name').value;
-            const n2 = document.getElementById('gift-name').value;
-            const welcomeTxt = currentMode === 'self' ? `مرحباً بك يا ${n1}` : `إهداء مَليء بالحُب من ${n1} إلى ${n2}`;
-            const speech = new SpeechSynthesisUtterance(welcomeTxt);
+            const speech = new SpeechSynthesisUtterance(mode==='self' ? `مرحباً بك يا ${n1}` : `إهداء مَليء بالحُب من ${n1} إلى ${n2}`);
             speech.lang = 'ar-SA';
             window.speechSynthesis.speak(speech);
 
             document.getElementById('ui-card').style.opacity = '0';
-            document.getElementById('snd-magic').play().catch(()=>{});
+            document.getElementById('sfx-magic').play().catch(()=>{});
             
             setTimeout(() => {
                 document.getElementById('ui-card').style.display = 'none';
-                startVisuals(n1, n2);
-            }, 1000);
+                showMagicScene(n1, n2);
+            }, 800);
         }
 
-        function startVisuals(n1, n2) {
-            const area = document.getElementById('magic-area');
-            area.style.display = 'flex';
-            document.getElementById('txt1').textContent = n1;
-            
-            if(currentMode !== 'self') {
-                document.getElementById('txt2').textContent = "❤️ " + n2;
-                document.getElementById('txt2').style.display = 'block';
-                document.getElementById('p2').style.display = 'block';
+        function showMagicScene(n1, n2) {
+            document.getElementById('display').style.display = 'flex';
+            document.getElementById('t1').textContent = n1;
+            if(mode==='gift') {
+                document.getElementById('t2').textContent = "❤ " + n2;
+                document.getElementById('t2').style.display = 'block';
+                document.getElementById('path2').style.display = 'block';
             }
-
+            
             // ميزة: حساب الأيام
-            const birth = new Date(document.getElementById('birth-date').value);
+            const birth = new Date(document.getElementById('b-date').value);
             if(!isNaN(birth)) {
                 const diff = Math.floor((new Date() - birth) / (1000 * 60 * 60 * 24));
-                const info = document.getElementById('days-info');
-                info.innerHTML = `أنت تُضيء الكوكب منذ <span style="color:var(--secondary); font-size:20px;">${diff}</span> يوماً`;
-                info.style.opacity = "1";
+                const dBox = document.getElementById('days-info');
+                dBox.innerHTML = `أنت تُنير الأرض منذ <span style="color:var(--gold); font-size:20px;">${diff}</span> يوماً`;
+                dBox.style.opacity = "1";
             }
 
-            drawHearts();
-        }
+            // ميزة: الانعكاس
+            document.getElementById('mirror').innerHTML = document.getElementById('svg-obj').outerHTML;
 
-        function drawHearts() {
-            const paths = [document.getElementById('p1'), document.getElementById('p2')];
+            const paths = [document.getElementById('path1'), document.getElementById('path2')];
             paths.forEach(p => {
                 p.setAttribute('stroke', '#ff1e1e');
                 let len = p.getTotalLength();
-                p.style.strokeDasharray = len;
-                p.style.strokeDashoffset = len;
+                p.style.strokeDasharray = len; p.style.strokeDashoffset = len;
                 setTimeout(() => {
                     p.style.transition = "stroke-dashoffset 4s cubic-bezier(0.4, 0, 0.2, 1)";
                     p.style.strokeDashoffset = "0";
                 }, 100);
             });
-            setTimeout(typeMessage, 4500);
+            setTimeout(startTypingMsg, 4500);
         }
 
-        function typeMessage() {
-            const msg = currentMode === 'self' ? 
-                "أنت لست مجرد اسم، أنت السحر الذي يسكن هذا الكون..." : 
-                "هذا السحر كُتب خصيصاً ليجمع قلوبكما في ميثاق الوفاء الأبدي...";
-            
+        function startTypingMsg() {
+            const txt = mode==='self' ? "أنت لست مجرد اسم، أنت السحر الذي يسكن هذا الكون..." : "هذا الحب أقوى من الكلمات، سحر يجمع قلوبكما في ميثاق الوفاء الأبدي...";
             let i = 0;
-            const box = document.getElementById('final-msg');
-            const timer = setInterval(() => {
-                box.innerHTML += msg.charAt(i);
+            const box = document.getElementById('msg');
+            const interval = setInterval(() => {
+                box.innerHTML += txt.charAt(i);
                 i++;
-                if(i >= msg.length) {
-                    clearInterval(timer);
-                    setTimeout(executeFinalFlash, 5000);
+                if(i >= txt.length) {
+                    clearInterval(interval);
+                    document.getElementById('svg-obj').classList.add('pulsing'); // نبض القلب
+                    setTimeout(finalExit, 6000);
                 }
-            }, 70);
+            }, 80);
         }
 
-        function executeFinalFlash() {
-            const flash = document.getElementById('flash-effect');
+        function finalExit() {
+            const flash = document.getElementById('flash');
             flash.style.display = 'block';
             setTimeout(() => {
-                flash.style.opacity = '1';
-                flash.style.transition = 'opacity 1s';
-                setTimeout(() => {
-                    window.location.href = 'https://t.me/mnshtrk';
-                }, 1000);
+                flash.style.opacity = '1'; flash.style.transition = 'opacity 1.2s';
+                setTimeout(() => window.location.href = 'https://t.me/mnshtrk', 1200);
             }, 50);
         }
 
-        // ميزة: جزيئات الخلفية المتفاعلة
+        // جزيئات الخلفية المتفاعلة
         const canvas = document.getElementById('bg-canvas');
         const ctx = canvas.getContext('2d');
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-
-        function animateBg() {
+        canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+        function animate() {
             ctx.clearRect(0,0,canvas.width, canvas.height);
             ctx.fillStyle = "rgba(255, 30, 30, 0.2)";
-            for(let i=0; i<40; i++) {
+            for(let i=0; i<35; i++) {
                 ctx.beginPath();
                 ctx.arc(Math.random()*canvas.width, Math.random()*canvas.height, 1, 0, Math.PI*2);
                 ctx.fill();
             }
-            requestAnimationFrame(animateBg);
+            requestAnimationFrame(animate);
         }
-        animateBg();
+        animate();
     </script>
 </body>
 </html>
